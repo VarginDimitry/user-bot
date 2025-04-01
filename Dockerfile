@@ -1,31 +1,37 @@
-FROM python:3.12.9-slim-bullseye
+FROM python:3.12.9-slim AS builder
 
-ENV PYTHONFAULTHANDLER=1 \
-  PYTHONUNBUFFERED=1 \
-  PYTHONHASHSEED=random \
-  PYTHONDONTWRITEBYTECODE=1 \
-  PIP_NO_CACHE_DIR=off \
-  PIP_DISABLE_PIP_VERSION_CHECK=on \
-  PIP_DEFAULT_TIMEOUT=100 \
-  POETRY_NO_INTERACTION=1 \
-  POETRY_VIRTUALENVS_CREATE=false \
-  POETRY_CACHE_DIR='/var/cache/pypoetry' \
-  PATH="$PATH:/root/.poetry/bin"
+WORKDIR /app
 
-# Installation dependency:
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+    gcc \
+    python3-dev \
+    libffi-dev \
+    musl-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+COPY pyproject.toml poetry.lock ./
+
 RUN pip install --upgrade pip && \
-    pip install poetry && \
-    apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false && \
-    apt-get clean -y && rm -rf /var/lib/apt/lists/*
+    pip install --no-cache-dir poetry
 
-WORKDIR /code
+RUN poetry config virtualenvs.create false
 
-# Copy only requirements, to cache them in docker layer
-COPY ./poetry.lock ./pyproject.toml ./
+RUN poetry install --only main --no-interaction --no-ansi
 
-# Project initialization:
-RUN poetry install --no-interaction --no-ansi
+COPY src .
 
-COPY ./src .
+FROM python:3.12.9-slim
 
+WORKDIR /app
+
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+    ffmpeg libavcodec-extra \
+    && rm -rf /var/lib/apt/lists/*
+
+COPY --from=builder /usr/local/lib/python3.12/site-packages /usr/local/lib/python3.12/site-packages
+COPY --from=builder /app /app
+
+# Set entrypoint
 CMD ["python", "main.py"]
