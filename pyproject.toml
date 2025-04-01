@@ -15,6 +15,7 @@ tgcrypto = "^1.2.5"
 faster-whisper = "^1.1.1"
 aiofiles = "^24.1.0"
 ffmpeg-python = "^0.2.0"
+hf-xet = "^0.1.4"
 
 
 [build-system]

@@ -1,3 +1,4 @@
+import logging
 import multiprocessing
 from pathlib import Path
 
@@ -20,6 +21,7 @@ class VoiceService:
             cpu_threads=whisper_settings.CPU_THREADS,
             download_root=whisper_settings.DOWNLOAD_ROOT,
         )
+        logging.info("Model downloaded")
 
     async def transcribe_voice_message(self, message: Message) -> str:
         suffix = '.ogg'
