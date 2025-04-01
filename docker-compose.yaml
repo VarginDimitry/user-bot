@@ -1,5 +1,6 @@
 services:
   user-bot:
+    tty: true
     stdin_open: true
     build:
       context: .
