@@ -4,11 +4,12 @@ from dotenv import load_dotenv
 from pyrogram import Client
 
 from voice_service import VoiceService
-from config import BotSettings
+from config import BotSettings, WhisperSettings
 
 load_dotenv()
 
 config = BotSettings()  # type: ignore
+whisper_config = WhisperSettings()
 
 bot = Client(
     name=config.LOGIN,
@@ -18,5 +19,5 @@ bot = Client(
 )
 
 logging.info("voice model start downloading")
-voice_service = VoiceService()
+voice_service = VoiceService(whisper_settings=whisper_config)
 logging.info("voice model has downloaded")

@@ -1,4 +1,5 @@
 import multiprocessing
+from pathlib import Path
 
 import aiofiles
 import ffmpeg
@@ -6,16 +7,18 @@ from faster_whisper import WhisperModel
 # from pydub import AudioSegment
 from pyrogram.types import Message
 
+from config import WhisperSettings
+
 
 class VoiceService:
 
-    def __init__(self):
+    def __init__(self, whisper_settings: WhisperSettings):
         self.model = WhisperModel(
-            model_size_or_path="large-v3",
-            device="cpu",
-            compute_type="int8",
-            cpu_threads=multiprocessing.cpu_count(),
-            download_root='downloads/whisper',
+            model_size_or_path=whisper_settings.MODEL,
+            device=whisper_settings.DEVICE,
+            compute_type=whisper_settings.COMPUTE_TYPE,
+            cpu_threads=whisper_settings.CPU_THREADS,
+            download_root=whisper_settings.DOWNLOAD_ROOT,
         )
 
     async def transcribe_voice_message(self, message: Message) -> str:
