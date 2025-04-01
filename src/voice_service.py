@@ -3,7 +3,7 @@ import multiprocessing
 import aiofiles
 import ffmpeg
 from faster_whisper import WhisperModel
-from pydub import AudioSegment
+# from pydub import AudioSegment
 from pyrogram.types import Message
 
 
@@ -30,7 +30,7 @@ class VoiceService:
             await message.download(input_voice.name)
             self.convert_ogg_to_wav(input_voice.name, output_voice.name)
 
-            length = self.get_voice_length(output_voice.name, suffix.removeprefix('.'))
+            # length = self.get_voice_length(output_voice.name, suffix.removeprefix('.'))
 
             return self.get_transcribe(output_voice.name)
 
@@ -49,10 +49,10 @@ class VoiceService:
             .run(overwrite_output=True)
         )
 
-    @classmethod
-    def get_voice_length(cls, file: str, file_format: str) -> float:
-        """raise CouldntDecodeError"""
-        audio = AudioSegment.from_file(file, format=file_format)
-        duration_ms = len(audio)
-        duration_seconds = duration_ms / 1000
-        return duration_seconds
+    # @classmethod
+    # def get_voice_length(cls, file: str, file_format: str) -> float:
+    #     """raise CouldntDecodeError"""
+    #     audio = AudioSegment.from_file(file, format=file_format)
+    #     duration_ms = len(audio)
+    #     duration_seconds = duration_ms / 1000
+    #     return duration_seconds

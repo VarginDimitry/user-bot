@@ -6,3 +6,5 @@ services:
     container_name: user-bot
     env_file:
       - .env
+    volumes:
+      - ./src:/app
