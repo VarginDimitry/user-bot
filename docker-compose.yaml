@@ -1,0 +1,16 @@
+version: "3.8"
+
+services:
+  user-bot:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: user-bot
+    networks:
+      - user-bot
+    env_file:
+      - .env
+
+networks:
+  user-bot:
+    external: True

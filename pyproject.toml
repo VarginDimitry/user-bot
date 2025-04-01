@@ -1,0 +1,22 @@
+[tool.poetry]
+name = "user-bot"
+version = "0.1.0"
+description = ""
+authors = ["Vargin, <Dmitry.Vargin@x5.ru>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+pyrogram = "^2.0.106"
+python-decouple = "^3.8"
+pydantic-settings = "^2.8.1"
+tgcrypto = "^1.2.5"
+faster-whisper = "^1.1.1"
+aiofiles = "^24.1.0"
+ffmpeg-python = "^0.2.0"
+pydub = "^0.25.1"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
