@@ -11,7 +11,7 @@ async def transcribe_voices(client: Client, message: Message):
     result = await voice_service.transcribe_voice_message(message)
     await message.reply(
         text=f"Расшифровка:\n\n{result}",
-        quote=True
+        quote=True,
     )
 
 if __name__ == '__main__':

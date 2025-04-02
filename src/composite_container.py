@@ -1,4 +1,5 @@
 import logging
+import sys
 
 from dotenv import load_dotenv
 from pyrogram import Client
@@ -7,6 +8,7 @@ from voice_service import VoiceService
 from config import BotSettings, WhisperSettings
 
 load_dotenv()
+logging.basicConfig(level=logging.INFO, stream=sys.stdout)
 
 config = BotSettings()  # type: ignore
 whisper_config = WhisperSettings()
