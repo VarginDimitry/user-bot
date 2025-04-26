@@ -1,4 +1,4 @@
-FROM python:3.12.9-slim AS builder
+FROM python:3.13.3-slim AS builder
 
 WORKDIR /app
 
@@ -21,7 +21,7 @@ RUN poetry install --only main --no-interaction --no-ansi
 
 COPY src .
 
-FROM python:3.12.9-slim
+FROM python:3.13.3-slim
 
 WORKDIR /app
 
@@ -29,7 +29,7 @@ RUN apt-get update && \
     apt-get install -y --no-install-recommends \
     ffmpeg libavcodec-extra
 
-COPY --from=builder /usr/local/lib/python3.12/site-packages /usr/local/lib/python3.12/site-packages
+COPY --from=builder /usr/local/lib/python3.13/site-packages /usr/local/lib/python3.13/site-packages
 COPY --from=builder /app /app
 
 # Set entrypoint

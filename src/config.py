@@ -2,10 +2,9 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class BotSettings(BaseSettings):
-    API_ID: str
+    API_ID: int
     API_HASH: str
-    PHONE: str
-    LOGIN: str
+
 
 class WhisperSettings(BaseSettings):
     MODEL: str = "large-v3"

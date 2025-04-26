@@ -2,10 +2,10 @@ import logging
 import sys
 
 from dotenv import load_dotenv
-from pyrogram import Client
+from telethon import TelegramClient
 
-from voice_service import VoiceService
 from config import BotSettings, WhisperSettings
+from voice_service import VoiceService
 
 load_dotenv()
 logging.basicConfig(level=logging.INFO, stream=sys.stdout)
@@ -13,11 +13,10 @@ logging.basicConfig(level=logging.INFO, stream=sys.stdout)
 config = BotSettings()  # type: ignore
 whisper_config = WhisperSettings()
 
-bot = Client(
-    name=config.LOGIN,
+client = TelegramClient(
+    session="Telethon",
     api_id=config.API_ID,
     api_hash=config.API_HASH,
-    phone_number=config.PHONE,
 )
 
 logging.info("voice model start downloading")

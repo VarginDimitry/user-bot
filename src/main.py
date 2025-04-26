@@ -1,18 +1,25 @@
-import logging
+from typing import cast
 
-from pyrogram import Client, filters
-from pyrogram.types import Message
+from telethon.events import NewMessage
+from telethon.tl.patched import Message
 
-from composite_container import voice_service, bot
+from composite_container import client, voice_service
 
 
-@bot.on_message((filters.voice | filters.video_note) & filters.private)
-async def transcribe_voices(client: Client, message: Message):
-    result = await voice_service.transcribe_voice_message(message)
+@client.on(
+    NewMessage(
+        func=lambda e: (e.message.voice or e.message.video_note) and e.is_private
+    )
+)
+async def transcribe_voices(event: NewMessage.Event):
+    message = cast(Message, event.message)
+    result = await voice_service.transcribe_voice_message(message) or "No text detected"
     await message.reply(
-        text=f"Расшифровка:\n\n{result}",
-        quote=True,
+        message=f"<blockquote>{result}</blockquote>",
+        parse_mode="HTML",
     )
 
-if __name__ == '__main__':
-    bot.run()
+
+if __name__ == "__main__":
+    client.start()
+    client.run_until_disconnected()
