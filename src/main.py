@@ -10,6 +10,7 @@ from telethon import TelegramClient
 
 from config import BotSettings
 from handlers import register_handlers
+from providers.gpt import GPTProvider
 from providers.root import RootProvider
 from providers.voice_provider import VoiceProvider
 
@@ -44,6 +45,7 @@ async def main():
     container = make_async_container(
         RootProvider(),
         VoiceProvider(),
+        GPTProvider(),
     )
     setup_dishka_telethon(client, container)
 

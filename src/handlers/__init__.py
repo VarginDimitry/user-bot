@@ -1,6 +1,7 @@
 from telethon import TelegramClient
 from telethon.events import NewMessage
 
+from handlers.gpt import ask_gpt
 from handlers.voice import auto_transcribe_voice, transcribe_voice
 
 
@@ -17,5 +18,15 @@ def register_handlers(client: TelegramClient):
         NewMessage(
             func=lambda e: e.message.is_reply,
             pattern=r'^/transcribe$'
+        )
+    )
+
+    ### GPT HANDLERS
+    client.add_event_handler(
+        ask_gpt,
+        NewMessage(
+            pattern=r'^/gpt',
+            outgoing=True,
+            incoming=False,
         )
     )

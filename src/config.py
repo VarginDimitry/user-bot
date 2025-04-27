@@ -14,3 +14,10 @@ class WhisperSettings(BaseSettings):
     DOWNLOAD_ROOT: str = "downloads/whisper"
 
     model_config = SettingsConfigDict(env_prefix="WHISPER_")
+
+
+class GPTSettings(BaseSettings):
+    GOOGLE_GEMINI_API_KEY: str
+
+    model_config = SettingsConfigDict(env_prefix="GPT_")
+

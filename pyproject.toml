@@ -17,6 +17,7 @@ ffmpeg-python = "^0.2.0"
 hf-xet = "^0.1.4"
 telethon = "^1.40.0"
 dishka = "^1.5.3"
+google-genai = "^1.12.1"
 
 
 [tool.poetry.group.dev.dependencies]
