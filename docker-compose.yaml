@@ -11,4 +11,5 @@ services:
     restart: always
     volumes:
       - ./src/Telethon.session:/app/Telethon.session
+      - ./src/Telethon.session-journal:/app/Telethon.session-journal
       - ./src/downloads:/app/downloads
