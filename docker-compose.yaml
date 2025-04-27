@@ -8,5 +8,7 @@ services:
     container_name: user-bot
     env_file:
       - .env
+    restart: always
     volumes:
-      - ./src:/app
+      - ./src/Telethon.session:/app/Telethon.session
+      - ./src/downloads:/app/downloads
