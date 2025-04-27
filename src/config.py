@@ -20,4 +20,3 @@ class GPTSettings(BaseSettings):
     GOOGLE_GEMINI_API_KEY: str
 
     model_config = SettingsConfigDict(env_prefix="GPT_")
-

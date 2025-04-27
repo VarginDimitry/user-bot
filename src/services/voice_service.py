@@ -1,3 +1,5 @@
+from typing import cast
+
 import aiofiles
 import ffmpeg
 from faster_whisper import WhisperModel
@@ -18,8 +20,10 @@ class VoiceService:
             aiofiles.tempfile.NamedTemporaryFile(suffix=".wav") as output_voice,
         ):
             await message.download_media(file=input_voice.name)
-            self.convert_ogg_to_wav(input_voice.name, output_voice.name)
-            return self.get_transcribe(output_voice.name)
+            self.convert_ogg_to_wav(
+                cast(str, input_voice.name), cast(str, output_voice.name)
+            )
+            return self.get_transcribe(cast(str, output_voice.name))
 
     def get_transcribe(self, voice: str) -> str:
         """raise Exception"""

@@ -1,6 +1,6 @@
 import logging
 
-from dishka import Provider, provide, Scope
+from dishka import Provider, Scope, provide
 from faster_whisper import WhisperModel
 
 from config import WhisperSettings
@@ -10,7 +10,7 @@ from services.voice_service import VoiceService
 class VoiceProvider(Provider):
     @provide(scope=Scope.APP)
     def provide_whisper_settings(self) -> WhisperSettings:
-        return WhisperSettings()  # type: ignore
+        return WhisperSettings()
 
     @provide(scope=Scope.APP)
     def provide_whisper_model(self, whisper_config: WhisperSettings) -> WhisperModel:

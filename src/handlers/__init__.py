@@ -5,28 +5,25 @@ from handlers.gpt import ask_gpt
 from handlers.voice import auto_transcribe_voice, transcribe_voice
 
 
-def register_handlers(client: TelegramClient):
+def register_handlers(client: TelegramClient) -> None:
     ### VOICE HANDLERS
     client.add_event_handler(
         auto_transcribe_voice,
         NewMessage(
             func=lambda e: (e.message.voice or e.message.video_note) and e.is_private
-        )
+        ),
     )
     client.add_event_handler(
         transcribe_voice,
-        NewMessage(
-            func=lambda e: e.message.is_reply,
-            pattern=r'^/transcribe$'
-        )
+        NewMessage(func=lambda e: e.message.is_reply, pattern=r"^/transcribe$"),
     )
 
     ### GPT HANDLERS
     client.add_event_handler(
         ask_gpt,
         NewMessage(
-            pattern=r'^/gpt',
+            pattern=r"^/gpt",
             outgoing=True,
             incoming=False,
-        )
+        ),
     )

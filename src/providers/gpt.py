@@ -1,15 +1,14 @@
-from dishka import Provider, provide, Scope
+from dishka import Provider, Scope, provide
 from google.genai import Client
 
 from config import GPTSettings
-from services.gpt_service import GPTService, GeminiService
+from services.gpt_service import GeminiService, GPTService
 
 
 class GPTProvider(Provider):
-
     @provide(scope=Scope.APP)
     def provide_bot_settings(self) -> GPTSettings:
-        return GPTSettings()  # type: ignore
+        return GPTSettings()
 
     @provide(scope=Scope.APP)
     def provide_gemini(self, gpt_config: GPTSettings) -> Client:
@@ -18,4 +17,3 @@ class GPTProvider(Provider):
     @provide(scope=Scope.REQUEST)
     def provide_gpt_service(self, gemini: Client) -> GPTService:
         return GeminiService(gemini)
-
