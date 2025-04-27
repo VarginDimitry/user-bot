@@ -263,6 +263,18 @@ pyyaml = ">=5.3,<7"
 setuptools = "*"
 
 [[package]]
+name = "dishka"
+version = "1.5.3"
+description = "Cute DI framework with scopes and agreeable API"
+optional = false
+python-versions = ">=3.10"
+groups = ["main"]
+files = [
+    {file = "dishka-1.5.3-py3-none-any.whl", hash = "sha256:838f2c21ad2f39424e326e836fb9dbef127d8e418593b9e9d5187c14479cd079"},
+    {file = "dishka-1.5.3.tar.gz", hash = "sha256:d40c0d879f6662e66de0c72458081fbcbdb55fee5823ca5820b714bc1c690c29"},
+]
+
+[[package]]
 name = "faster-whisper"
 version = "1.1.1"
 description = "Faster Whisper transcription with CTranslate2"
@@ -1282,4 +1294,4 @@ zstd = ["zstandard (>=0.18.0)"]
 [metadata]
 lock-version = "2.1"
 python-versions = "^3.12"
-content-hash = "ff3f95edda35c8fc796d6abb781f9e7419dc9847994cb7e839f3296ab9e8a73f"
+content-hash = "5bd9ba4657299877135a18816a7473660368412dca9127c11656d60762d8863e"

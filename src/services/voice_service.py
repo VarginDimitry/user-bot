@@ -1,23 +1,12 @@
-import logging
-
 import aiofiles
 import ffmpeg
 from faster_whisper import WhisperModel
 from telethon.tl.patched import Message
 
-from config import WhisperSettings
-
 
 class VoiceService:
-    def __init__(self, whisper_settings: WhisperSettings):
-        self.model = WhisperModel(
-            model_size_or_path=whisper_settings.MODEL,
-            device=whisper_settings.DEVICE,
-            compute_type=whisper_settings.COMPUTE_TYPE,
-            cpu_threads=whisper_settings.CPU_THREADS,
-            download_root=whisper_settings.DOWNLOAD_ROOT,
-        )
-        logging.info("Model downloaded")
+    def __init__(self, whisper_model: WhisperModel):
+        self.model = whisper_model
 
     async def transcribe_voice_message(self, message: Message) -> str:
         suffix = ".ogg"
