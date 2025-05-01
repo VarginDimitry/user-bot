@@ -1,4 +1,4 @@
-from typing import Sequence, Final
+from typing import Final, Sequence
 
 from dishka import AsyncContainer
 from dishka.integrations.base import wrap_injection
@@ -15,11 +15,7 @@ class MegaTelegramClient(TelegramClient):
         self.di_container = di_container
         super().__init__(*args, **kwargs)
 
-    def add_event_handler(
-            self,
-            callback: Callback,
-            event: EventBuilder = None
-    ) -> None:
+    def add_event_handler(self, callback: Callback, event: EventBuilder = None) -> None:
         di_wrapper = wrap_injection(
             func=callback,
             container_getter=lambda args, kwargs: self.di_container,
@@ -29,28 +25,28 @@ class MegaTelegramClient(TelegramClient):
         return super().add_event_handler(di_wrapper, event)
 
     async def safe_send_message(
-            self,
-            entity: hints.EntityLike,
-            message: str = '',
-            *,
-            reply_to: int | types.Message = None,
-            attributes: Sequence[types.TypeDocumentAttribute] = None,
-            parse_mode: str | None = (),
-            formatting_entities: list[types.TypeMessageEntity] | None = None,
-            link_preview: bool = True,
-            file: hints.FileLike | Sequence[hints.FileLike] = None,
-            thumb: hints.FileLike = None,
-            force_document: bool = False,
-            clear_draft: bool = False,
-            buttons: hints.MarkupLike | None = None,
-            silent: bool = None,
-            background: bool = None,
-            supports_streaming: bool = False,
-            schedule: hints.DateLike = None,
-            comment_to: int | types.Message = None,
-            nosound_video: bool = None,
-            send_as: hints.EntityLike | None = None,
-            message_effect_id: int | None = None
+        self,
+        entity: hints.EntityLike,
+        message: str = "",
+        *,
+        reply_to: int | types.Message = None,
+        attributes: Sequence[types.TypeDocumentAttribute] = None,
+        parse_mode: str | None = (),
+        formatting_entities: list[types.TypeMessageEntity] | None = None,
+        link_preview: bool = True,
+        file: hints.FileLike | Sequence[hints.FileLike] = None,
+        thumb: hints.FileLike = None,
+        force_document: bool = False,
+        clear_draft: bool = False,
+        buttons: hints.MarkupLike | None = None,
+        silent: bool = None,
+        background: bool = None,
+        supports_streaming: bool = False,
+        schedule: hints.DateLike = None,
+        comment_to: int | types.Message = None,
+        nosound_video: bool = None,
+        send_as: hints.EntityLike | None = None,
+        message_effect_id: int | None = None,
     ) -> list[types.Message]:
         messages = split_by_size(message, self.MESSAGE_SIZE_LIMIT)
         return [
@@ -75,10 +71,10 @@ class MegaTelegramClient(TelegramClient):
                 nosound_video=nosound_video,
                 send_as=send_as,
                 message_effect_id=message_effect_id,
-            ) for m in messages
+            )
+            for m in messages
         ]
 
 
-
 def split_by_size(text: str, max_size: int) -> list[str]:
-    return [text[i:i+max_size] for i in range(0, len(text), max_size)]
+    return [text[i : i + max_size] for i in range(0, len(text), max_size)]

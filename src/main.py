@@ -1,12 +1,9 @@
 import asyncio
 import logging
 import sys
-from types import MethodType
-from typing import Any, Awaitable, Callable, cast
+from typing import Awaitable, cast
 
-from dishka import AsyncContainer, make_async_container
-from dishka.integrations.base import wrap_injection
-from telethon.events.common import EventBuilder
+from dishka import make_async_container
 
 from config import BotSettings
 from handlers import register_handlers

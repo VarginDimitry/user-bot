@@ -32,7 +32,6 @@ class InstaProvider(Provider):
         client.dump_settings(self.LOGIN_JSON_PATH)
         client.get_timeline_feed()
 
-
     @provide(scope=Scope.REQUEST)
     def provide_insta_service(self, insta_client: Client) -> InstaService:
         return InstaService(insta_client=insta_client)

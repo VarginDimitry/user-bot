@@ -5,7 +5,6 @@ from typing import cast
 from aiofiles.threadpool.binary import AsyncBufferedReader
 from instagrapi import Client
 from instagrapi.types import Media
-from pydantic import AnyUrl
 
 
 class InstaService:
@@ -16,7 +15,7 @@ class InstaService:
         video_path = Path(video_file.name)
 
         try:
-            media_pk = await asyncio.to_thread(self.insta_client.media_pk_from_url,url)
+            media_pk = await asyncio.to_thread(self.insta_client.media_pk_from_url, url)
             media_info = await asyncio.to_thread(self.insta_client.media_info, media_pk)
             await asyncio.to_thread(
                 self.insta_client.video_download_by_url,
@@ -30,7 +29,7 @@ class InstaService:
 
     async def get_media_info_by_link(self, url: str) -> Media:
         try:
-            media_pk = await asyncio.to_thread(self.insta_client.media_pk_from_url,url)
+            media_pk = await asyncio.to_thread(self.insta_client.media_pk_from_url, url)
             return await asyncio.to_thread(self.insta_client.media_info, media_pk)
         except Exception as e:
             # logging.error(f"Failed to download video: {e}")

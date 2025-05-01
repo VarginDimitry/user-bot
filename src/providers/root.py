@@ -1,5 +1,4 @@
 from dishka import Provider, Scope, from_context, provide
-from telethon import TelegramClient
 from telethon.events.common import EventCommon
 
 from config import BotSettings

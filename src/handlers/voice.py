@@ -17,7 +17,7 @@ async def auto_transcribe_voice(
 
     await client.safe_send_message(
         message.chat_id,
-        message=result,
+        message=f"<blockquote>{result}</blockquote>",
         reply_to=message.id,
         parse_mode="HTML",
     )
