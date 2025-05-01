@@ -1,6 +1,7 @@
-src/*.session
-src/*.session-journal
-src/downloads
+/src/*.session
+/src/*.session-journal
+/src/InstagramSession.json
+/src/downloads
 
 
 # Created by .ignore support plugin (hsz.mobi)

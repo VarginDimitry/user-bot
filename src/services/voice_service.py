@@ -1,3 +1,4 @@
+import asyncio
 from typing import cast
 
 import aiofiles
@@ -20,8 +21,10 @@ class VoiceService:
             aiofiles.tempfile.NamedTemporaryFile(suffix=".wav") as output_voice,
         ):
             await message.download_media(file=input_voice.name)
-            self.convert_ogg_to_wav(
-                cast(str, input_voice.name), cast(str, output_voice.name)
+            await asyncio.to_thread(
+                self.convert_ogg_to_wav,
+                cast(str, input_voice.name),
+                cast(str, output_voice.name),
             )
             return self.get_transcribe(cast(str, output_voice.name))
 

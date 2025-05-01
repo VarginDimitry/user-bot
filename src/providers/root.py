@@ -11,7 +11,3 @@ class RootProvider(Provider):
     @provide(scope=Scope.APP)
     def provide_bot_settings(self) -> BotSettings:
         return BotSettings()
-
-    @provide(scope=Scope.REQUEST)
-    def provide_telethon_client(self, event: EventCommon) -> TelegramClient:
-        return event.client

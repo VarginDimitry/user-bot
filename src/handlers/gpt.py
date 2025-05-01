@@ -5,13 +5,15 @@ from telethon.events import NewMessage
 from telethon.tl.patched import Message
 
 from services.gpt_service import GPTService
+from utils.custom_telegram_client import MegaTelegramClient
 
 
 async def ask_gpt(event: NewMessage.Event, gpt_service: FromDishka[GPTService]) -> None:
     message = cast(Message, event.message)
+    client = cast(MegaTelegramClient, event.client)
     text = message.text.removeprefix("/gpt").strip()
     if not text:
         return
 
     answer = await gpt_service.ask(prompt=text) or "No response"
-    await message.reply(answer)
+    await client.send_message(message.chat_id, answer, reply_to=message.id)

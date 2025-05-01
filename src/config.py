@@ -20,3 +20,10 @@ class GPTSettings(BaseSettings):
     GOOGLE_GEMINI_API_KEY: str
 
     model_config = SettingsConfigDict(env_prefix="GPT_")
+
+
+class InstaSettings(BaseSettings):
+    USERNAME: str
+    PASSWORD: str
+
+    model_config = SettingsConfigDict(env_prefix="INSTA_")
