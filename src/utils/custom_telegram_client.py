@@ -1,4 +1,4 @@
-from typing import Final, Sequence
+from typing import Any, Final, Sequence
 
 from dishka import AsyncContainer
 from dishka.integrations.base import wrap_injection
@@ -11,7 +11,7 @@ from telethon.tl import types
 class MegaTelegramClient(TelegramClient):
     MESSAGE_SIZE_LIMIT: Final[int] = 4096
 
-    def __init__(self, *args, di_container: AsyncContainer, **kwargs):
+    def __init__(self, *args: Any, di_container: AsyncContainer, **kwargs: Any) -> None:
         self.di_container = di_container
         super().__init__(*args, **kwargs)
 
@@ -22,7 +22,7 @@ class MegaTelegramClient(TelegramClient):
             is_async=True,
             manage_scope=True,
         )
-        return super().add_event_handler(di_wrapper, event)
+        super().add_event_handler(di_wrapper, event)
 
     async def safe_send_message(
         self,
@@ -30,8 +30,8 @@ class MegaTelegramClient(TelegramClient):
         message: str = "",
         *,
         reply_to: int | types.Message = None,
-        attributes: Sequence[types.TypeDocumentAttribute] = None,
-        parse_mode: str | None = (),
+        attributes: Any = None,
+        parse_mode: str | None = None,
         formatting_entities: list[types.TypeMessageEntity] | None = None,
         link_preview: bool = True,
         file: hints.FileLike | Sequence[hints.FileLike] = None,
@@ -39,12 +39,12 @@ class MegaTelegramClient(TelegramClient):
         force_document: bool = False,
         clear_draft: bool = False,
         buttons: hints.MarkupLike | None = None,
-        silent: bool = None,
-        background: bool = None,
+        silent: bool | None = None,
+        background: bool | None = None,
         supports_streaming: bool = False,
         schedule: hints.DateLike = None,
         comment_to: int | types.Message = None,
-        nosound_video: bool = None,
+        nosound_video: bool | None = None,
         send_as: hints.EntityLike | None = None,
         message_effect_id: int | None = None,
     ) -> list[types.Message]:

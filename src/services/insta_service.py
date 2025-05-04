@@ -12,7 +12,7 @@ class InstaService:
         self.insta_client = insta_client
 
     async def download(self, url: str, video_file: AsyncBufferedReader) -> None:
-        video_path = Path(video_file.name)
+        video_path = Path(cast(str, video_file.name))
 
         try:
             media_pk = await asyncio.to_thread(self.insta_client.media_pk_from_url, url)

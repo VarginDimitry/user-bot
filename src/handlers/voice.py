@@ -16,7 +16,7 @@ async def auto_transcribe_voice(
     result = await voice_service.transcribe_voice_message(message) or "No text detected"
 
     await client.safe_send_message(
-        message.chat_id,
+        entity=message.peer_id,
         message=f"<blockquote>{result}</blockquote>",
         reply_to=message.id,
         parse_mode="HTML",
@@ -37,8 +37,8 @@ async def transcribe_voice(
 
     await message.delete()
     await client.safe_send_message(
-        message.chat_id,
+        entity=message.peer_id,
         message=f"<blockquote>{result}</blockquote>",
-        reply_to=message.reply_to,
+        reply_to=message.reply_to_msg_id,
         parse_mode="HTML",
     )

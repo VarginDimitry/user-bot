@@ -16,4 +16,8 @@ async def ask_gpt(event: NewMessage.Event, gpt_service: FromDishka[GPTService]) 
         return
 
     answer = await gpt_service.ask(prompt=text) or "No response"
-    await client.send_message(message.chat_id, answer, reply_to=message.id)
+    await client.send_message(
+        entity=message.peer_id,
+        message=answer,
+        reply_to=message.id,
+    )

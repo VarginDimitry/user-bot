@@ -20,7 +20,10 @@ class VoiceService:
             aiofiles.tempfile.NamedTemporaryFile(suffix=suffix) as input_voice,
             aiofiles.tempfile.NamedTemporaryFile(suffix=".wav") as output_voice,
         ):
-            await message.download_media(file=input_voice.name)
+            path = await message.download_media(file=input_voice.name)
+            if not path:
+                return ""
+
             await asyncio.to_thread(
                 self.convert_ogg_to_wav,
                 cast(str, input_voice.name),

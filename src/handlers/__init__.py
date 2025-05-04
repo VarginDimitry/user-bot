@@ -1,12 +1,12 @@
-from telethon import TelegramClient
 from telethon.events import NewMessage
 
 from handlers.gpt import ask_gpt
 from handlers.insta import download_insta
 from handlers.voice import auto_transcribe_voice, transcribe_voice
+from utils.custom_telegram_client import MegaTelegramClient
 
 
-def register_handlers(client: TelegramClient) -> None:
+def register_handlers(client: MegaTelegramClient) -> None:
     ### VOICE HANDLERS
     client.add_event_handler(
         auto_transcribe_voice,
