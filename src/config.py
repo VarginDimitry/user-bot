@@ -1,9 +1,13 @@
+from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class BotSettings(BaseSettings):
     API_ID: int
     API_HASH: str
+
+    BLACK_LIST_INSTA: list[int] = Field(default_factory=list)
+    BLACK_LIST_VOICE: list[int] = Field(default_factory=list)
 
 
 class WhisperSettings(BaseSettings):

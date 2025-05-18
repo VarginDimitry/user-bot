@@ -33,7 +33,7 @@ async def main() -> None:
         di_container=di_container,
     )
 
-    register_handlers(client)
+    register_handlers(client, bot_settings)
     await cast(Awaitable[None], client.start())
     await client.run_until_disconnected()
 
