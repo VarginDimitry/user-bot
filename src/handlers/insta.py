@@ -31,6 +31,7 @@ async def download_insta(
         file=str(media_info.video_url) or insta_url,
         caption=text[:client.MESSAGE_SIZE_LIMIT],
         reply_to=message.reply_to_msg_id if user.is_self else message.id,
+        silent=True,
         parse_mode="HTML",
     )
 

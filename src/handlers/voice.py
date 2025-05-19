@@ -19,6 +19,7 @@ async def auto_transcribe_voice(
         entity=message.peer_id,
         message=f"<blockquote>{result}</blockquote>",
         reply_to=message.id,
+        silent=True,
         parse_mode="HTML",
     )
 
@@ -40,5 +41,6 @@ async def transcribe_voice(
         entity=message.peer_id,
         message=f"<blockquote>{result}</blockquote>",
         reply_to=message.reply_to_msg_id,
+        silent=True,
         parse_mode="HTML",
     )

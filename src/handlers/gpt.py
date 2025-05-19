@@ -20,4 +20,5 @@ async def ask_gpt(event: NewMessage.Event, gpt_service: FromDishka[GPTService]) 
         entity=message.peer_id,
         message=answer,
         reply_to=message.id,
+        silent=True,
     )
