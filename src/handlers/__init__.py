@@ -12,7 +12,7 @@ def register_handlers(client: MegaTelegramClient, settings: BotSettings) -> None
     client.add_event_handler(
         auto_transcribe_voice,
         NewMessage(
-            func=lambda e: e.message.voice or e.message.video_note,
+            func=lambda e: (e.message.voice or e.message.video_note) and e.is_private,
             chats=settings.BLACK_LIST_VOICE,
             blacklist_chats=True,
         ),
@@ -36,6 +36,7 @@ def register_handlers(client: MegaTelegramClient, settings: BotSettings) -> None
     client.add_event_handler(
         download_insta,
         NewMessage(
+            func=lambda e: e.is_private,
             pattern=r"https?://(www\.)?instagram\.com/.*",
             chats=settings.BLACK_LIST_INSTA,
             blacklist_chats=True,

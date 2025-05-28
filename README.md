@@ -9,8 +9,9 @@
 2. Create a `.env` file with the following parameters:
     * `API_ID` - Telegram API ID (get from [my.telegram.org](https://my.telegram.org))
     * `API_HASH` - Telegram API hash (get from [my.telegram.org](https://my.telegram.org))
-    * `PHONE` - Telegram phone number
-    * `LOGIN` - Telegram login
+    * `BLACK_LIST_INSTA` - list of Telegram chat IDs to block for downloading Instagram posts (for example, `["1", "2"]`)
+    * `BLACK_LIST_VOICE` - list of Telegram chat IDs to block for transcribing voice messages (for example, `["1", "2"]`)
+    * `GPT_GOOGLE_GEMINI_API_KEY` - API key for Google Gemini (get from [aistudio from Google](https://aistudio.google.com/apikey))
     * `WHISPER_MODEL` - Whisper model to use (for example, `large-v3-turbo`)
     * `WHISPER_DEVICE` - device to use for Whisper (for example, `cpu`)
     * `WHISPER_COMPUTE_TYPE` - compute type to use for Whisper (for example, `int8`)
