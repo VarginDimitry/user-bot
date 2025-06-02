@@ -42,3 +42,13 @@ def register_handlers(client: MegaTelegramClient, settings: BotSettings) -> None
             blacklist_chats=True,
         ),
     )
+    client.add_event_handler(
+        download_insta,
+        NewMessage(
+            pattern=r"https?://(www\.)?instagram\.com/.*",
+            chats=settings.BLACK_LIST_INSTA,
+            blacklist_chats=True,
+            outgoing=True,
+            incoming=False,
+        ),
+    )
