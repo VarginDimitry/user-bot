@@ -8,7 +8,7 @@ from telethon.events.common import EventBuilder
 from telethon.tl import types
 
 
-class MegaTelegramClient(TelegramClient):
+class MegaTelegramClient(TelegramClient):  # type: ignore[misc]
     MESSAGE_SIZE_LIMIT: Final[int] = 4096
 
     def __init__(self, *args: Any, di_container: AsyncContainer, **kwargs: Any) -> None:
