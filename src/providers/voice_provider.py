@@ -1,4 +1,6 @@
+import asyncio
 import logging
+from logging import Logger
 
 from dishka import Provider, Scope, provide
 from faster_whisper import WhisperModel
@@ -13,19 +15,27 @@ class VoiceProvider(Provider):
         return WhisperSettings()
 
     @provide(scope=Scope.APP)
-    def provide_whisper_model(self, whisper_config: WhisperSettings) -> WhisperModel:
-        logging.info("voice model start downloading")
-        model = WhisperModel(
+    async def provide_whisper_model(
+        self, logger: Logger, whisper_config: WhisperSettings
+    ) -> WhisperModel:
+        logger.info("Voice model start downloading")
+        model: WhisperModel = await asyncio.to_thread(
+            WhisperModel,
             model_size_or_path=whisper_config.MODEL,
             device=whisper_config.DEVICE,
             compute_type=whisper_config.COMPUTE_TYPE,
             cpu_threads=whisper_config.CPU_THREADS,
             download_root=whisper_config.DOWNLOAD_ROOT,
         )
-        logging.info("voice model has downloaded")
+        logger.info("Voice model has downloaded")
+
+        model.logger.setLevel(logging.INFO)
+
         return model
 
     @provide(scope=Scope.REQUEST)
-    def provide_voice_service(self, whisper_model: WhisperModel) -> VoiceService:
-        voice_service = VoiceService(whisper_model=whisper_model)
+    def provide_voice_service(
+        self, logger: Logger, whisper_model: WhisperModel
+    ) -> VoiceService:
+        voice_service = VoiceService(logger=logger, whisper_model=whisper_model)
         return voice_service

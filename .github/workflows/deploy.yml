@@ -18,7 +18,7 @@ jobs:
           password: ${{ secrets.SERVER_PASSWORD }}
           script: |
             cd /root/apps/user-bot
-            git pull
+            git pull --rabase
             docker compose down
-            docker compose build
-            docker compose up -d
+            docker system prune
+            docker compose up --build -d

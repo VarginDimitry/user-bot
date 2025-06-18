@@ -20,7 +20,8 @@ class GeminiService(GPTService):
         "gemini-1.5-flash-8b",
     ]
 
-    def __init__(self, gpt: genai.Client) -> None:
+    def __init__(self, logger: logging.Logger, gpt: genai.Client) -> None:
+        self.logger = logger
         self.gpt = gpt
 
     async def ask(self, prompt: str) -> str | None:

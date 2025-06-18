@@ -3,6 +3,8 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class BotSettings(BaseSettings):
+    APP_NAME: str = "Telethon"
+
     API_ID: int
     API_HASH: str
 

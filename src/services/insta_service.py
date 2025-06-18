@@ -1,4 +1,5 @@
 import asyncio
+from logging import Logger
 from pathlib import Path
 from typing import cast
 
@@ -12,7 +13,10 @@ from config import InstaSettings
 class InstaService:
     LOGIN_JSON_PATH = Path("InstagramSession.json")
 
-    def __init__(self, config: InstaSettings, insta_client: Client) -> None:
+    def __init__(
+        self, logger: Logger, config: InstaSettings, insta_client: Client
+    ) -> None:
+        self.logger = logger
         self.config = config
         self.client = insta_client
 

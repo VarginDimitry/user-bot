@@ -1,4 +1,5 @@
 import asyncio
+from logging import Logger
 from typing import cast
 
 import aiofiles
@@ -8,7 +9,8 @@ from telethon.tl.patched import Message
 
 
 class VoiceService:
-    def __init__(self, whisper_model: WhisperModel):
+    def __init__(self, logger: Logger, whisper_model: WhisperModel):
+        self.logger = logger
         self.model = whisper_model
 
     async def transcribe_voice_message(self, message: Message) -> str:
@@ -24,8 +26,7 @@ class VoiceService:
             if not path:
                 return ""
 
-            await asyncio.to_thread(
-                self.convert_ogg_to_wav,
+            await self.convert_ogg_to_wav(
                 cast(str, input_voice.name),
                 cast(str, output_voice.name),
             )
@@ -39,6 +40,18 @@ class VoiceService:
         return "".join([segment.text.strip() for segment in segments]).strip()
 
     @classmethod
-    def convert_ogg_to_wav(cls, ogg_file_path: str, wav_file_path: str) -> None:
+    async def convert_ogg_to_wav(cls, ogg_file_path: str, wav_file_path: str) -> None:
         """raise Exception"""
-        (ffmpeg.input(ogg_file_path).output(wav_file_path).run(overwrite_output=True))
+        return await asyncio.to_thread(
+            cls.__convert_ogg_to_wav,
+            ogg_file_path,
+            wav_file_path,
+        )
+
+    @classmethod
+    def __convert_ogg_to_wav(cls, ogg_file_path: str, wav_file_path: str) -> None:
+        (
+            ffmpeg.input(ogg_file_path)
+            .output(wav_file_path, loglevel="quiet")
+            .run(overwrite_output=True)
+        )

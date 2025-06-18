@@ -1,4 +1,4 @@
-from typing import Any, Final, Sequence
+from typing import Any, Final
 
 from dishka import AsyncContainer
 from dishka.integrations.base import wrap_injection
@@ -11,9 +11,11 @@ from telethon.tl import types
 class MegaTelegramClient(TelegramClient):  # type: ignore[misc]
     MESSAGE_SIZE_LIMIT: Final[int] = 4096
 
-    def __init__(self, *args: Any, di_container: AsyncContainer, **kwargs: Any) -> None:
+    def __init__(
+        self, di_container: AsyncContainer, logger: Any, **kwargs: Any
+    ) -> None:
         self.di_container = di_container
-        super().__init__(*args, **kwargs)
+        super().__init__(base_logger=logger, **kwargs)
 
     def add_event_handler(self, callback: Callback, event: EventBuilder = None) -> None:
         di_wrapper = wrap_injection(
@@ -28,49 +30,14 @@ class MegaTelegramClient(TelegramClient):  # type: ignore[misc]
         self,
         entity: hints.EntityLike,
         message: str = "",
-        *,
-        reply_to: int | types.Message = None,
-        attributes: Any = None,
-        parse_mode: str | None = None,
-        formatting_entities: list[types.TypeMessageEntity] | None = None,
-        link_preview: bool = True,
-        file: hints.FileLike | Sequence[hints.FileLike] = None,
-        thumb: hints.FileLike = None,
-        force_document: bool = False,
-        clear_draft: bool = False,
-        buttons: hints.MarkupLike | None = None,
-        silent: bool | None = None,
-        background: bool | None = None,
-        supports_streaming: bool = False,
-        schedule: hints.DateLike = None,
-        comment_to: int | types.Message = None,
-        nosound_video: bool | None = None,
-        send_as: hints.EntityLike | None = None,
-        message_effect_id: int | None = None,
+        **kwargs: Any,
     ) -> list[types.Message]:
         messages = split_by_size(message, self.MESSAGE_SIZE_LIMIT)
         return [
             await self.send_message(
                 entity,
                 m,
-                reply_to=reply_to,
-                attributes=attributes,
-                parse_mode=parse_mode,
-                formatting_entities=formatting_entities,
-                link_preview=link_preview,
-                file=file,
-                thumb=thumb,
-                force_document=force_document,
-                clear_draft=clear_draft,
-                buttons=buttons,
-                silent=silent,
-                background=background,
-                supports_streaming=supports_streaming,
-                schedule=schedule,
-                comment_to=comment_to,
-                nosound_video=nosound_video,
-                send_as=send_as,
-                message_effect_id=message_effect_id,
+                **kwargs,
             )
             for m in messages
         ]

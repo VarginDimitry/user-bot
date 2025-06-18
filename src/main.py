@@ -1,6 +1,5 @@
 import asyncio
-import logging
-import sys
+from logging import Logger
 from typing import Awaitable, cast
 
 from dishka import make_async_container
@@ -15,8 +14,6 @@ from utils.custom_telegram_client import MegaTelegramClient
 
 
 async def main() -> None:
-    logging.basicConfig(level=logging.INFO, stream=sys.stdout)
-
     di_container = make_async_container(
         RootProvider(),
         VoiceProvider(),
@@ -24,15 +21,15 @@ async def main() -> None:
         InstaProvider(),
     )
 
-    bot_settings = BotSettings()
-    app_name = "Telethon"
+    bot_settings = await di_container.get(BotSettings)
     client = MegaTelegramClient(
-        session="Telethon",
+        session=bot_settings.APP_NAME,
         api_id=bot_settings.API_ID,
         api_hash=bot_settings.API_HASH,
+        system_version=f"4.16.30-vx{bot_settings.APP_NAME}",
         loop=asyncio.get_running_loop(),
         di_container=di_container,
-        system_version=f"4.16.30-vx{app_name}"
+        logger=await di_container.get(Logger),
     )
 
     register_handlers(client, bot_settings)

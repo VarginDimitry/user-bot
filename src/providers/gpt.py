@@ -1,3 +1,5 @@
+from logging import Logger
+
 from dishka import Provider, Scope, provide
 from google.genai import Client
 
@@ -15,5 +17,5 @@ class GPTProvider(Provider):
         return Client(api_key=gpt_config.GOOGLE_GEMINI_API_KEY)
 
     @provide(scope=Scope.REQUEST)
-    def provide_gpt_service(self, gemini: Client) -> GPTService:
-        return GeminiService(gemini)
+    def provide_gpt_service(self, logger: Logger, gemini: Client) -> GPTService:
+        return GeminiService(logger=logger, gpt=gemini)
