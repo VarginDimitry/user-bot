@@ -25,12 +25,14 @@ async def main() -> None:
     )
 
     bot_settings = BotSettings()
+    app_name = "Telethon"
     client = MegaTelegramClient(
         session="Telethon",
         api_id=bot_settings.API_ID,
         api_hash=bot_settings.API_HASH,
         loop=asyncio.get_running_loop(),
         di_container=di_container,
+        system_version=f"4.16.30-vx{app_name}"
     )
 
     register_handlers(client, bot_settings)
