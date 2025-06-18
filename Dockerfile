@@ -24,13 +24,14 @@ COPY src .
 FROM python:3.13.3-slim
 
 WORKDIR /app
+USER app
 
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
     ffmpeg libavcodec-extra
 
 COPY --from=builder /usr/local/lib/python3.13/site-packages /usr/local/lib/python3.13/site-packages
-COPY --from=builder /app /app
+COPY --from=builder --chown=app:app /app /app
 
 # Set entrypoint
 CMD ["python", "main.py"]
