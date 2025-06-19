@@ -33,12 +33,12 @@ class MyResource(Resource):  # type: ignore[misc]
 
 
 class Images(BaseModel):
-    candidates: list[Candidate]
+    candidates: list[Candidate] = Field(default_factory=list)
 
 
 class MyMedia(Media):  # type: ignore[misc]
     media_type: MediaType
-    image_versions2: Images
+    image_versions2: Images | None
     resources: list[MyResource] = Field(default_factory=list)
 
     def is_image(self) -> bool:
@@ -49,16 +49,3 @@ class MyMedia(Media):  # type: ignore[misc]
 
     def is_album(self) -> bool:
         return self.media_type == MediaType.ALBUM
-
-    def extract_media_urls(self) -> list[str]:
-        match self.media_type:
-            case MediaType.IMAGE:
-                return [str(self.bigger_image.url)]
-            case MediaType.VIDEO:
-                return [str(self.video_url)]
-            case MediaType.ALBUM:
-                return [
-                    str(resource.video_url or resource.thumbnail_url)
-                    for resource in self.resources
-                ]
-        return []
