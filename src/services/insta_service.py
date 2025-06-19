@@ -1,9 +1,7 @@
 import asyncio
 from logging import Logger
 from pathlib import Path
-from typing import cast
 
-from aiofiles.threadpool.binary import AsyncBufferedReader
 from instagrapi import Client
 
 from config import InstaSettings
@@ -26,10 +24,13 @@ class InstaService:
     async def get_media_info_by_link(self, url: str) -> MyMedia:
         try:
             media_pk = await asyncio.to_thread(self.client.media_pk_from_url, url)
-            return MyMedia.model_validate(await asyncio.to_thread(
-                self.client.media_info,
-                media_pk,
-            ), from_attributes=True)
+            return MyMedia.model_validate(
+                await asyncio.to_thread(
+                    self.client.media_info,
+                    media_pk,
+                ),
+                from_attributes=True,
+            )
         except Exception as e:
             # logging.error(f"Failed to download video: {e}")
             raise e
@@ -37,7 +38,7 @@ class InstaService:
     def _login(self) -> bool:
         if self.LOGIN_JSON_PATH.exists() and self.LOGIN_JSON_PATH.is_file():
             self.client.load_settings(self.LOGIN_JSON_PATH)
-        is_login = self.client.login(
+        is_login: bool = self.client.login(
             username=self.config.USERNAME,
             password=self.config.PASSWORD,
         )
@@ -48,8 +49,8 @@ class InstaService:
     @classmethod
     def process_url(cls, url: str) -> str:
         url = url.strip()
-        if '?' in url:
-            url = url[:url.find("?")]
+        if "?" in url:
+            url = url[: url.find("?")]
         return url
 
     @classmethod

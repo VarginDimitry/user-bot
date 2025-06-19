@@ -1,15 +1,15 @@
-import asyncio
 from typing import cast
 
+import aiofiles
 import httpx
 from dishka import FromDishka
 from telethon.events import NewMessage
 from telethon.tl.patched import Message
 from telethon.tl.types import User
 
-from dto.instagram import MediaType
 from services.insta_service import InstaService
 from utils.custom_telegram_client import MegaTelegramClient
+from utils.download_media import download_media_by_info
 
 
 async def download_insta(
@@ -26,42 +26,25 @@ async def download_insta(
 
     text = (
         f"{insta_url}\n\n"
-        # f"👀 {insta_service.beautify_int(media_info.view_count)} / "
         f"❤️ {insta_service.beautify_int(media_info.like_count)} / "
-        f"✍️ {insta_service.beautify_int(media_info.comment_count) if not media_info.comments_disabled else 'comments_disabled'}\n\n"
+        f"💬 {insta_service.beautify_int(media_info.comment_count) if not media_info.comments_disabled else 'comments disabled'}\n\n"
         f"@{media_info.user.username} / <b>{media_info.user.full_name}</b>\n\n"
         f"{media_info.caption_text}"
     )
+    async with aiofiles.tempfile.TemporaryDirectory() as tempdir:
+        path = await download_media_by_info(
+            httpx_client=httpx_client,
+            tempdir=tempdir,
+            media_info=media_info,
+        )
 
-    file = media_info.extract_media_urls()
-    if not file:
         await client.send_message(
             entity=message.peer_id,
-            message="Unsupported media type",
+            file=path,
+            message=text
+            if len(text) < client.CAPTION_SIZE_LIMIT
+            else f"{text[: client.CAPTION_SIZE_LIMIT - 3]}...",
             reply_to=message.reply_to_msg_id if user.is_self else message.id,
             silent=True,
             parse_mode="HTML",
         )
-        return
-
-    if len(file) > 1:
-        file = [
-            response.content
-            for response in
-            await asyncio.gather(*[
-                httpx_client.get(url) for url in file
-            ])
-        ]
-
-    await client.send_message(
-        entity=message.peer_id,
-        file=file if media_info.is_album() else file[0],
-        message=text[: client.CAPTION_SIZE_LIMIT],
-        reply_to=message.reply_to_msg_id if user.is_self else message.id,
-        silent=True,
-        parse_mode="HTML",
-    )
-
-
-    if user.is_self:
-        await message.delete()

@@ -1,4 +1,4 @@
-from typing import Any, Final, Callable
+from typing import Any, Callable, Final
 
 from dishka import AsyncContainer
 from dishka.integrations.base import wrap_injection
@@ -28,7 +28,7 @@ class MegaTelegramClient(TelegramClient):  # type: ignore[misc]
             is_async=True,
             manage_scope=True,
         )
-        return super().add_event_handler(di_wrapper, event)
+        super().add_event_handler(di_wrapper, event)
 
     async def safe_send_message(
         self,

@@ -1,7 +1,7 @@
 from enum import IntEnum
 
-from instagrapi.types import Media
-from pydantic import BaseModel, HttpUrl
+from instagrapi.types import Media, Resource
+from pydantic import BaseModel, Field, HttpUrl
 
 
 class MediaType(IntEnum):
@@ -16,19 +16,11 @@ class Candidate(BaseModel):
     width: int
 
 
-class Images(BaseModel):
-    candidates: list[Candidate]
-
-    @property
-    def bigger(self) -> Candidate | None:
-        if not self.candidates:
-            return None
-        return self.candidates[0]
-
-
-class MyMedia(Media):
+class MyResource(Resource):  # type: ignore[misc]
+    pk: str
+    video_url: HttpUrl | None = None
+    thumbnail_url: HttpUrl
     media_type: MediaType
-    image_versions2: Images
 
     def is_image(self) -> bool:
         return self.media_type == MediaType.IMAGE
@@ -39,11 +31,24 @@ class MyMedia(Media):
     def is_album(self) -> bool:
         return self.media_type == MediaType.ALBUM
 
-    @property
-    def bigger_image(self) -> Candidate | None:
-        if not self.image_versions2:
-            return None
-        return self.image_versions2.bigger
+
+class Images(BaseModel):
+    candidates: list[Candidate]
+
+
+class MyMedia(Media):  # type: ignore[misc]
+    media_type: MediaType
+    image_versions2: Images
+    resources: list[MyResource] = Field(default_factory=list)
+
+    def is_image(self) -> bool:
+        return self.media_type == MediaType.IMAGE
+
+    def is_video(self) -> bool:
+        return self.media_type == MediaType.VIDEO
+
+    def is_album(self) -> bool:
+        return self.media_type == MediaType.ALBUM
 
     def extract_media_urls(self) -> list[str]:
         match self.media_type:
