@@ -48,3 +48,6 @@ async def download_insta(
             silent=True,
             parse_mode="HTML",
         )
+
+    if user.is_self:
+        await message.delete()
