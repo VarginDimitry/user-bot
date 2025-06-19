@@ -17,15 +17,8 @@
     * `WHISPER_COMPUTE_TYPE` - compute type to use for Whisper (for example, `int8`)
     * `WHISPER_CPU_THREADS` - number of CPU threads to use for Whisper (for example, `1`)
     * `WHISPER_DOWNLOAD_ROOT` - directory to download Whisper models to (for example, `downloads/whisper`)
-3. Build the Docker image:
-    ```bash
-    docker compose build
-    ```
-4. Run the Docker container for creating a session:
-   1. ```docker compose up```
-   2. Input verification code and password
-   3. ```docker compose down```
-5. Run the Docker container:
-   ```bash
-   docker compose up -d
-   ```
+3. Build and run a docker container:
+   1. If it's a first start run ```docker compose up -d --build && docker attach user-bot``` 
+   and enter your credentials for Telegram to create session files
+   2. Else run ```docker compose up -d --build```
+   3. Or ```docker compose up -d``` if you want to skip the build
