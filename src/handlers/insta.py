@@ -55,7 +55,7 @@ async def download_insta(
 
     await client.send_message(
         entity=message.peer_id,
-        file=file if media_info.media_type == MediaType.ALBUM else file[0],
+        file=file if media_info.is_album() else file[0],
         message=text[: client.CAPTION_SIZE_LIMIT],
         reply_to=message.reply_to_msg_id if user.is_self else message.id,
         silent=True,

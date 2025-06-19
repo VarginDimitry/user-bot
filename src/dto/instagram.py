@@ -30,6 +30,15 @@ class MyMedia(Media):
     media_type: MediaType
     image_versions2: Images
 
+    def is_image(self) -> bool:
+        return self.media_type == MediaType.IMAGE
+
+    def is_video(self) -> bool:
+        return self.media_type == MediaType.VIDEO
+
+    def is_album(self) -> bool:
+        return self.media_type == MediaType.ALBUM
+
     @property
     def bigger_image(self) -> Candidate | None:
         if not self.image_versions2:
