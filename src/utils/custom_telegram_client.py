@@ -1,15 +1,16 @@
-from typing import Any, Final
+from typing import Any, Final, Callable
 
 from dishka import AsyncContainer
 from dishka.integrations.base import wrap_injection
 from telethon import TelegramClient, hints
-from telethon.client.updates import Callback
 from telethon.events.common import EventBuilder
 from telethon.tl import types
 
 
 class MegaTelegramClient(TelegramClient):  # type: ignore[misc]
     MESSAGE_SIZE_LIMIT: Final[int] = 4096
+    CAPTION_SIZE_LIMIT: Final[int] = 1024
+    CAPTION_SIZE_LIMIT_WITH_PREMIUM: Final[int] = 2048
 
     def __init__(
         self, di_container: AsyncContainer, logger: Any, **kwargs: Any
@@ -17,14 +18,17 @@ class MegaTelegramClient(TelegramClient):  # type: ignore[misc]
         self.di_container = di_container
         super().__init__(base_logger=logger, **kwargs)
 
-    def add_event_handler(self, callback: Callback, event: EventBuilder = None) -> None:
+    # func: Callable[..., T]) -> Callable[..., T]
+    def add_event_handler(
+        self, callback: Callable[..., None], event: EventBuilder = None
+    ) -> None:
         di_wrapper = wrap_injection(
             func=callback,
             container_getter=lambda args, kwargs: self.di_container,
             is_async=True,
             manage_scope=True,
         )
-        super().add_event_handler(di_wrapper, event)
+        return super().add_event_handler(di_wrapper, event)
 
     async def safe_send_message(
         self,

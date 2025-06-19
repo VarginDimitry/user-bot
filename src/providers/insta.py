@@ -28,5 +28,6 @@ class InstaProvider(Provider):
             insta_client=insta_client,
             config=insta_config,
         )
-        await service.login()
+        if not await service.login():
+            raise Exception("Failed to login to Instagram")
         return service

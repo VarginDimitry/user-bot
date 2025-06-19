@@ -37,7 +37,7 @@ class VoiceService:
         segments, _ = self.model.transcribe(
             audio=voice, vad_filter=True, beam_size=1, language="ru"
         )
-        return "".join([segment.text.strip() for segment in segments]).strip()
+        return "\n".join([segment.text.strip() for segment in segments]).strip()
 
     @classmethod
     async def convert_ogg_to_wav(cls, ogg_file_path: str, wav_file_path: str) -> None:

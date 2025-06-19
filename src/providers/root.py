@@ -1,5 +1,6 @@
 import logging
 
+import httpx
 from dishka import Provider, Scope, from_context, provide
 from telethon.events.common import EventCommon
 
@@ -29,3 +30,7 @@ class RootProvider(Provider):
         logger.addHandler(console_handler)
 
         return logger
+
+    @provide(scope=Scope.APP)
+    def httpx_client(self) -> httpx.AsyncClient:
+        return httpx.AsyncClient()
