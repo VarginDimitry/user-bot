@@ -6,7 +6,7 @@
     git clone git@github.com:VarginDimitry/user-bot.git
     cd user-bot
     ```
-2. Create a `.env` file with the following parameters:
+2. Create a `.env` file with the following parameters (you may use a `example.env` file as a template):
     * `API_ID` - Telegram API ID (get from [my.telegram.org](https://my.telegram.org))
     * `API_HASH` - Telegram API hash (get from [my.telegram.org](https://my.telegram.org))
     * `BLACK_LIST_INSTA` - list of Telegram chat IDs to block for downloading Instagram posts (for example, `["1", "2"]`)
