@@ -20,6 +20,7 @@ jobs:
             set -e
             cd /root/apps/user-bot
             git pull --rebase
-            docker compose down
             docker system prune
-            docker compose up --build -d
+            docker compose build
+            docker compose down
+            docker compose up -d

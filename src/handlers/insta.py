@@ -30,7 +30,7 @@ async def download_insta(
         await client.send_message(
             entity=message.peer_id,
             message="Can't download media",
-            reply_to=message.reply_to_msg_id if user.is_self else message.id,
+            reply_to=message.id,
             silent=True,
             parse_mode="HTML",
         )
