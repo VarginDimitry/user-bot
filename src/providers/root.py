@@ -1,6 +1,8 @@
 import logging
+from typing import AsyncIterable
 
 import httpx
+from coloredlogs import ColoredFormatter
 from dishka import Provider, Scope, from_context, provide
 from telethon.events.common import EventCommon
 
@@ -19,18 +21,19 @@ class RootProvider(Provider):
         logger = logging.getLogger(bot_settings.APP_NAME)
         logger.setLevel(logging.INFO)
 
-        formatter = logging.Formatter(
-            fmt="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-            datefmt="%Y-%m-%d %H:%M:%S",
-        )
-
         console_handler = logging.StreamHandler()
-        console_handler.setFormatter(formatter)
+        console_handler.setFormatter(
+            ColoredFormatter(
+                fmt="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+                datefmt="%Y-%m-%d %H:%M:%S",
+            )
+        )
 
         logger.addHandler(console_handler)
 
         return logger
 
     @provide(scope=Scope.APP)
-    def httpx_client(self) -> httpx.AsyncClient:
-        return httpx.AsyncClient()
+    async def httpx_client(self) -> AsyncIterable[httpx.AsyncClient]:
+        async with httpx.AsyncClient() as client:
+            yield client

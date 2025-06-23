@@ -1,34 +1,33 @@
-[tool.poetry]
+[project]
 name = "user-bot"
 version = "0.1.0"
 description = ""
-authors = ["Vargin, <Dmitry.Vargin@x5.ru>"]
+authors = ["Dmitry Vargin"]
 readme = "README.md"
-package-mode = false
+requires-python = ">=3.11"
+dependencies = [
+    "aiofiles>=24.1.0",
+    "colorama>=0.4.6",
+    "dishka>=1.6.0",
+    "faster-whisper>=1.1.1",
+    "ffmpeg-python>=0.2.0",
+    "google-genai>=1.21.1",
+    "hf-xet>=1.1.5",
+    "instagrapi>=2.1.5",
+    "pillow>=11.2.1",
+    "pydantic>=2.11.5",
+    "pydantic-settings>=2.10.0",
+    "telethon>=1.40.0",
+    "tgcrypto>=1.2.5",
+]
 
-[tool.poetry.dependencies]
-python = "^3.12"
-python-decouple = "^3.8"
-pydantic-settings = "^2.8.1"
-tgcrypto = "^1.2.5"
-faster-whisper = "^1.1.1"
-aiofiles = "^24.1.0"
-ffmpeg-python = "^0.2.0"
-hf-xet = "^0.1.4"
-telethon = "^1.40.0"
-dishka = "^1.6.0"
-google-genai = "^1.20.0"
-instagrapi = "^2.1.5"
-pillow = "^11.2.1"
-notebook = "^7.4.3"
-
-
-[tool.poetry.group.dev.dependencies]
-isort = "^6.0.1"
-ruff = "^0.11.7"
-mypy = "^1.15.0"
-types-aiofiles = "^24.1.0.20250326"
-
-[build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
+[project.optional-dependencies]
+lint = [
+    "isort>=6.0.1",
+    "mypy>=1.16.1",
+    "ruff>=0.12.0",
+    "types-aiofiles>=24.1.0.20250606",
+]
+dev = [
+    "notebook>=7.4.3",
+]

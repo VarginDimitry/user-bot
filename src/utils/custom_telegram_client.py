@@ -1,10 +1,12 @@
-from typing import Any, Callable, Final
+from typing import Any, Callable, Final, Iterable
 
 from dishka import AsyncContainer
 from dishka.integrations.base import wrap_injection
 from telethon import TelegramClient, hints
 from telethon.events.common import EventBuilder
 from telethon.tl import types
+
+from utils.strings import split_by_size
 
 
 class MegaTelegramClient(TelegramClient):  # type: ignore[misc]
@@ -18,7 +20,6 @@ class MegaTelegramClient(TelegramClient):  # type: ignore[misc]
         self.di_container = di_container
         super().__init__(base_logger=logger, **kwargs)
 
-    # func: Callable[..., T]) -> Callable[..., T]
     def add_event_handler(
         self, callback: Callable[..., None], event: EventBuilder = None
     ) -> None:
@@ -34,9 +35,13 @@ class MegaTelegramClient(TelegramClient):  # type: ignore[misc]
         self,
         entity: hints.EntityLike,
         message: str = "",
+        style: str | None = None,
         **kwargs: Any,
     ) -> list[types.Message]:
-        messages = split_by_size(message, self.MESSAGE_SIZE_LIMIT)
+        messages: Iterable[str] = split_by_size(message, self.MESSAGE_SIZE_LIMIT)
+        if style:
+            messages = (f"<{style}>{m}</{style}>" for m in messages)
+
         return [
             await self.send_message(
                 entity,
@@ -45,7 +50,3 @@ class MegaTelegramClient(TelegramClient):  # type: ignore[misc]
             )
             for m in messages
         ]
-
-
-def split_by_size(text: str, max_size: int) -> list[str]:
-    return [text[i : i + max_size] for i in range(0, len(text), max_size)]

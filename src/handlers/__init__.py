@@ -1,4 +1,8 @@
+from typing import cast
+
 from telethon.events import NewMessage
+from telethon.tl.patched import Message
+from telethon.tl.types import User
 
 from config import BotSettings
 from handlers.gpt import ask_gpt
@@ -33,22 +37,19 @@ def register_handlers(client: MegaTelegramClient, settings: BotSettings) -> None
     )
 
     ### INSTA HANDLERS
+    async def download_insta_func_filter(event: NewMessage.Event) -> bool:
+        message = cast(Message, event.message)
+        user = cast(User, await message.get_sender())
+
+        if user.id in settings.BLACK_LIST_INSTA:
+            return False
+
+        return bool(user.is_self) or bool(event.is_private)
+
     client.add_event_handler(
         download_insta,
         NewMessage(
-            func=lambda e: e.is_private,
             pattern=r"https?://(www\.)?instagram\.com/.*",
-            chats=settings.BLACK_LIST_INSTA,
-            blacklist_chats=True,
-        ),
-    )
-    client.add_event_handler(
-        download_insta,
-        NewMessage(
-            func=lambda e: not e.is_private,
-            pattern=r"https?://(www\.)?instagram\.com/.*",
-            chats=settings.BLACK_LIST_INSTA,
-            blacklist_chats=True,
-            outgoing=True,
+            func=download_insta_func_filter,
         ),
     )

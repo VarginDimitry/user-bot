@@ -2,8 +2,8 @@ import asyncio
 from logging import Logger
 from typing import cast
 
-import aiofiles
 import ffmpeg
+from aiofiles.tempfile import NamedTemporaryFile
 from faster_whisper import WhisperModel
 from telethon.tl.patched import Message
 
@@ -14,16 +14,15 @@ class VoiceService:
         self.model = whisper_model
 
     async def transcribe_voice_message(self, message: Message) -> str:
-        suffix = ".ogg"
-        if message.video_note:
-            suffix = ".mp4"
-
         async with (
-            aiofiles.tempfile.NamedTemporaryFile(suffix=suffix) as input_voice,
-            aiofiles.tempfile.NamedTemporaryFile(suffix=".wav") as output_voice,
+            NamedTemporaryFile(
+                suffix=".mp4" if message.video_note else ".ogg"
+            ) as input_voice,
+            NamedTemporaryFile(suffix=".wav") as output_voice,
         ):
             path = await message.download_media(file=input_voice.name)
             if not path:
+                self.logger.error("Failed to download voice message")
                 return ""
 
             await self.convert_ogg_to_wav(
@@ -33,23 +32,27 @@ class VoiceService:
             return self.get_transcribe(cast(str, output_voice.name))
 
     def get_transcribe(self, voice: str) -> str:
-        """raise Exception"""
-        segments, _ = self.model.transcribe(
-            audio=voice, vad_filter=True, beam_size=1, language="ru"
-        )
-        return "\n".join([segment.text.strip() for segment in segments]).strip()
+        try:
+            segments, _ = self.model.transcribe(
+                audio=voice, vad_filter=True, beam_size=1, language="ru"
+            )
+        except (ValueError, RuntimeError) as err:
+            self.logger.error(err)
+            raise
+        else:
+            return "\n".join([segment.text.strip() for segment in segments]).strip()
 
     @classmethod
     async def convert_ogg_to_wav(cls, ogg_file_path: str, wav_file_path: str) -> None:
         """raise Exception"""
         return await asyncio.to_thread(
-            cls.__convert_ogg_to_wav,
+            cls.sync_convert_ogg_to_wav,
             ogg_file_path,
             wav_file_path,
         )
 
     @classmethod
-    def __convert_ogg_to_wav(cls, ogg_file_path: str, wav_file_path: str) -> None:
+    def sync_convert_ogg_to_wav(cls, ogg_file_path: str, wav_file_path: str) -> None:
         (
             ffmpeg.input(ogg_file_path)
             .output(wav_file_path, loglevel="quiet")

@@ -1,3 +1,4 @@
+from logging import Logger
 from typing import cast
 
 from dishka import FromDishka
@@ -25,13 +26,16 @@ async def auto_transcribe_voice(
 
 
 async def transcribe_voice(
-    event: NewMessage.Event, voice_service: FromDishka[VoiceService]
+    event: NewMessage.Event,
+    logger: FromDishka[Logger],
+    voice_service: FromDishka[VoiceService],
 ) -> None:
     message = cast(Message, event.message)
     client = cast(MegaTelegramClient, event.client)
 
     reply_message = cast(Message | None, await message.get_reply_message())
     if not (reply_message and (reply_message.voice or reply_message.video_note)):
+        logger.error("Got not a voice message")
         return
 
     result = await voice_service.transcribe_voice_message(message) or "No text detected"
@@ -39,7 +43,8 @@ async def transcribe_voice(
     await message.delete()
     await client.safe_send_message(
         entity=message.peer_id,
-        message=f"<blockquote>{result}</blockquote>",
+        message=result,
+        style="blockquote",
         reply_to=message.reply_to_msg_id,
         silent=True,
         parse_mode="HTML",

@@ -6,14 +6,14 @@ endif
 PYTHON_SRC := src
 
 ruff-lint:
-	poetry run ruff check ${PYTHON_SRC} --fix
+	uv run ruff check ${PYTHON_SRC} --fix
 
 ruff-format:
-	poetry run isort .
-	poetry run ruff format ${PYTHON_SRC}
+	uv run isort .
+	uv run ruff format ${PYTHON_SRC}
 
 mypy:
-	@poetry run mypy ${PYTHON_SRC} --no-color-output --explicit-package-bases
+	@uv run mypy ${PYTHON_SRC} --no-color-output --explicit-package-bases
 
 check:
 	make ruff-format

@@ -1,7 +1,9 @@
 /src/*.session
 /src/*.session-journal
-/src/InstagramSession.json
-/src/downloads
+**/Telethon.session
+**/Telethon.session-journal
+**/InstagramSession.json
+/src/downloads/
 
 
 # Created by .ignore support plugin (hsz.mobi)

@@ -21,19 +21,13 @@ class InstaService:
     async def login(self) -> bool:
         return await asyncio.to_thread(self._login)
 
-    async def get_media_info_by_link(self, url: str) -> MyMedia:
+    async def get_media_info_by_link(self, url: str) -> MyMedia | None:
         try:
-            media_pk = await asyncio.to_thread(self.client.media_pk_from_url, url)
-            return MyMedia.model_validate(
-                await asyncio.to_thread(
-                    self.client.media_info,
-                    media_pk,
-                ),
-                from_attributes=True,
-            )
+            media_info = await self._media_info(self.client.media_pk_from_url(url))
+            return MyMedia.model_validate(media_info, from_attributes=True)
         except Exception as e:
-            # logging.error(f"Failed to download video: {e}")
-            raise e
+            self.logger.error(f"Failed to download: {e}")
+            return None
 
     def _login(self) -> bool:
         if self.LOGIN_JSON_PATH.exists() and self.LOGIN_JSON_PATH.is_file():
@@ -46,22 +40,10 @@ class InstaService:
             self.client.dump_settings(self.LOGIN_JSON_PATH)
         return is_login
 
+    async def _media_info(self, media_pk: str) -> MyMedia:
+        return await asyncio.to_thread(self.client.media_info, media_pk)
+
     @classmethod
     def process_url(cls, url: str) -> str:
         url = url.strip()
-        if "?" in url:
-            url = url[: url.find("?")]
-        return url
-
-    @classmethod
-    def beautify_int(cls, x: int) -> str:
-        char = "-" if x < 0 else ""
-        x = abs(x)
-        if x < 1_000:
-            return f"{char}{x}"
-        elif x < 1_000_000:
-            return f"{char}{x // 1000}K"
-        elif x < 1_000_000_000:
-            return f"{char}{x // 1_000_000}M"
-        else:
-            return f"{char}{x // 1_000_000_000}B"
+        return url[:idx] if (idx := url.find("?")) != -1 else url

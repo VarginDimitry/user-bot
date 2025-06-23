@@ -102,7 +102,6 @@ __pycache__/
 build/
 develop-eggs/
 dist/
-downloads/
 eggs/
 .eggs/
 lib/
@@ -264,3 +263,8 @@ Temporary Items
 .ci/helm/.env
 .ci/helm/config.json
 database/job.yaml
+
+**/Telethon.session
+**/Telethon.session-journal
+**/InstagramSession.json
+/src/downloads/

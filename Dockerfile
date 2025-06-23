@@ -10,16 +10,11 @@ RUN apt-get update && \
     musl-dev \
     && rm -rf /var/lib/apt/lists/*
 
-COPY pyproject.toml poetry.lock ./
+COPY pyproject.toml uv.lock ./
+RUN --mount=from=ghcr.io/astral-sh/uv,source=/uv,target=/bin/uv \
+    uv sync
 
-RUN pip install --upgrade pip && \
-    pip install --no-cache-dir poetry
-
-RUN poetry config virtualenvs.create false
-
-RUN poetry install --only main --no-interaction --no-ansi
-
-COPY src .
+COPY src ./
 
 FROM python:3.13.3-slim
 
