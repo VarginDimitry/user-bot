@@ -8,6 +8,9 @@ class BotSettings(BaseSettings):
     API_ID: int
     API_HASH: str
 
+    TELEGRAM_BOT_TOKEN: str
+    SEND_TO: int
+
     BLACK_LIST_INSTA: list[int] = Field(default_factory=list)
     BLACK_LIST_VOICE: list[int] = Field(default_factory=list)
 
