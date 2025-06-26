@@ -26,15 +26,6 @@ async def download_insta(
     insta_url = insta_service.process_url(message.text.strip())
 
     media_info = await insta_service.get_media_info_by_link(insta_url)
-    if not media_info:
-        await client.send_message(
-            entity=message.peer_id,
-            message="Can't download media",
-            reply_to=message.id,
-            silent=True,
-            parse_mode="HTML",
-        )
-        return None
 
     text = _build_answer_text(insta_url, media_info, client.CAPTION_SIZE_LIMIT)
     async with TemporaryDirectory() as tempdir:

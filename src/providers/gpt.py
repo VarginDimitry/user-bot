@@ -1,6 +1,6 @@
 from logging import Logger
 
-from dishka import Provider, Scope, provide
+from dishka import provide, Provider, Scope
 from google.genai import Client
 
 from config import GPTSettings

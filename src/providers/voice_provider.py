@@ -1,7 +1,7 @@
 import asyncio
 from logging import Logger
 
-from dishka import Provider, Scope, provide
+from dishka import provide, Provider, Scope
 from faster_whisper import WhisperModel
 
 from config import WhisperSettings

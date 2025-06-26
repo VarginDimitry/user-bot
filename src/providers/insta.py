@@ -1,6 +1,6 @@
 from logging import Logger
 
-from dishka import Provider, Scope, provide
+from dishka import provide, Provider, Scope
 from instagrapi import Client
 
 from config import InstaSettings

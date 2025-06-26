@@ -3,7 +3,7 @@ from typing import AsyncIterable
 
 import httpx
 from coloredlogs import ColoredFormatter
-from dishka import Provider, Scope, from_context, provide
+from dishka import from_context, provide, Provider, Scope
 from telethon.events.common import EventCommon
 
 from config import BotSettings

@@ -22,14 +22,14 @@ async def main() -> None:
     )
 
     bot_settings = await di_container.get(BotSettings)
+    logger = await di_container.get(Logger)
     client = MegaTelegramClient(
         session=bot_settings.APP_NAME,
         api_id=bot_settings.API_ID,
         api_hash=bot_settings.API_HASH,
-        system_version=f"4.16.30-vx{bot_settings.APP_NAME}",
         loop=asyncio.get_running_loop(),
         di_container=di_container,
-        logger=await di_container.get(Logger),
+        logger=logger,
     )
 
     register_handlers(client, bot_settings)
