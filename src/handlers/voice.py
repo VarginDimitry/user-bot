@@ -39,7 +39,10 @@ async def transcribe_voice(
         logger.error("Got not a voice message")
         return
 
-    result = await voice_service.transcribe_voice_message(reply_message) or "No text detected"
+    result = (
+        await voice_service.transcribe_voice_message(reply_message)
+        or "No text detected"
+    )
 
     await message.delete()
     await client.safe_send_message(
