@@ -1,47 +1,27 @@
-import asyncio
+import re
 from logging import Logger
-from pathlib import Path
 
-from instagrapi import Client
-
-from config import InstaSettings
-from dto.instagram import MyMedia
+from config import RootConfig
 
 
 class InstaService:
-    LOGIN_JSON_PATH = Path("InstagramSession.json")
+    LINK_REGEX = re.compile(r"https?://(www\.)?instagram\.com/.*")
+    DD_LINK_REGEX = re.compile(r"https?://(www\.)?ddinstagram\.com/.*")
 
-    def __init__(
-        self, logger: Logger, config: InstaSettings, insta_client: Client
-    ) -> None:
+    def __init__(self, logger: Logger, config: RootConfig) -> None:
         self.logger = logger
         self.config = config
-        self.client = insta_client
 
-    async def login(self) -> bool:
-        return await asyncio.to_thread(self._login)
+    async def get_new_link(self, link: str) -> str:
+        link = self.process_url(link)
 
-    async def get_media_info_by_link(self, url: str) -> MyMedia:
-        try:
-            media_info = await self._media_info(self.client.media_pk_from_url(url))
-            return MyMedia.model_validate(media_info, from_attributes=True)
-        except Exception as e:
-            self.logger.error(e)
-            raise
+        if not self.LINK_REGEX.match(link):
+            raise ValueError("Invalid link")
 
-    def _login(self) -> bool:
-        if self.LOGIN_JSON_PATH.exists() and self.LOGIN_JSON_PATH.is_file():
-            self.client.load_settings(self.LOGIN_JSON_PATH)
-        is_login: bool = self.client.login(
-            username=self.config.USERNAME,
-            password=self.config.PASSWORD,
-        )
-        if is_login:
-            self.client.dump_settings(self.LOGIN_JSON_PATH)
-        return is_login
+        if self.DD_LINK_REGEX.match(link):
+            return link
 
-    async def _media_info(self, media_pk: str) -> MyMedia:
-        return await asyncio.to_thread(self.client.media_info, media_pk)
+        return link.replace("instagram.com", "ddinstagram.com")
 
     @classmethod
     def process_url(cls, url: str) -> str:

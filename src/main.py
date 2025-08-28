@@ -4,7 +4,7 @@ from typing import Awaitable, cast
 
 from dishka import make_async_container
 
-from config import BotSettings
+from config import RootConfig
 from handlers import register_handlers
 from providers.gpt import GPTProvider
 from providers.insta import InstaProvider
@@ -21,18 +21,18 @@ async def main() -> None:
         InstaProvider(),
     )
 
-    bot_settings = await di_container.get(BotSettings)
+    config = await di_container.get(RootConfig)
     logger = await di_container.get(Logger)
     client = MegaTelegramClient(
-        session=bot_settings.APP_NAME,
-        api_id=bot_settings.API_ID,
-        api_hash=bot_settings.API_HASH,
+        session=config.user_bot.app_name,
+        api_id=config.user_bot.api_id,
+        api_hash=config.user_bot.api_hash,
         loop=asyncio.get_running_loop(),
         di_container=di_container,
         logger=logger,
     )
 
-    register_handlers(client, bot_settings)
+    register_handlers(client, config)
     await cast(Awaitable[None], client.start())
     await client.run_until_disconnected()
 

@@ -18,7 +18,8 @@ async def auto_transcribe_voice(
 
     await client.safe_send_message(
         entity=message.peer_id,
-        message=f"<blockquote>{result}</blockquote>",
+        message=result,
+        style="blockquote",
         reply_to=message.id,
         silent=True,
         parse_mode="HTML",

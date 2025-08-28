@@ -1,38 +1,57 @@
-from pydantic import Field
-from pydantic_settings import BaseSettings, SettingsConfigDict
+from pydantic import ConfigDict, Field
+from pydantic_settings import BaseSettings
 
 
-class BotSettings(BaseSettings):
-    APP_NAME: str = "Telethon"
+class UserBotSettings(BaseSettings):
+    model_config = ConfigDict(extra="ignore")
 
-    API_ID: int
-    API_HASH: str
+    app_name: str = "Telethon"
+    api_id: int
+    api_hash: str
 
-    TELEGRAM_BOT_TOKEN: str
-    SEND_TO: int
 
-    BLACK_LIST_INSTA: list[int] = Field(default_factory=list)
-    BLACK_LIST_VOICE: list[int] = Field(default_factory=list)
+class LoggerSettings(BaseSettings):
+    model_config = ConfigDict(extra="ignore")
+
+    bot_token: str
+    error_logger_send_to: int
 
 
 class WhisperSettings(BaseSettings):
-    MODEL: str = "large-v3"
-    DEVICE: str = "cpu"
-    COMPUTE_TYPE: str = "int8"
-    CPU_THREADS: int = 1
-    DOWNLOAD_ROOT: str = "downloads/whisper"
+    model_config = ConfigDict(extra="ignore")
 
-    model_config = SettingsConfigDict(env_prefix="WHISPER_")
+    model: str = "large-v3"
+    device: str = "cpu"
+    compute_type: str = "int8"
+    cpu_threads: int = 1
+    download_root: str = "downloads/whisper"
+
+    black_list: list[int] = Field(default_factory=list)
 
 
-class GPTSettings(BaseSettings):
-    GOOGLE_GEMINI_API_KEY: str
+class GeminiSettings(BaseSettings):
+    model_config = ConfigDict(extra="ignore")
 
-    model_config = SettingsConfigDict(env_prefix="GPT_")
+    api_key: str
 
 
 class InstaSettings(BaseSettings):
-    USERNAME: str
-    PASSWORD: str
+    model_config = ConfigDict(extra="ignore")
 
-    model_config = SettingsConfigDict(env_prefix="INSTA_")
+    black_list: list[int] = Field(default_factory=list)
+
+
+class RootConfig(BaseSettings):
+    model_config = ConfigDict(
+        extra="ignore",
+        env_file=".env",
+        env_file_encoding="utf-8",
+        env_nested_delimiter="__",
+    )
+
+    user_bot: UserBotSettings
+    logger: LoggerSettings
+
+    instagram: InstaSettings
+    gemini: GeminiSettings
+    whisper: WhisperSettings

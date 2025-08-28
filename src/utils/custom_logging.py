@@ -3,13 +3,13 @@ import logging
 
 from aiogram import Bot
 
-from config import BotSettings
+from config import RootConfig
 
 
 class TelegramLoggerHandler(logging.Handler):
     def __init__(
         self,
-        config: BotSettings,
+        config: RootConfig,
         bot: Bot,
     ) -> None:
         self.config = config
@@ -24,6 +24,8 @@ class TelegramLoggerHandler(logging.Handler):
     async def aemit(self, record: logging.LogRecord) -> None:
         try:
             message = self.format(record)
-            await self.bot.send_message(self.config.SEND_TO, message)
+            await self.bot.send_message(
+                self.config.logger.error_logger_send_to, message
+            )
         except Exception:
             self.handleError(record)

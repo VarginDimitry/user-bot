@@ -12,8 +12,6 @@
     * `BLACK_LIST_INSTA` - list of Telegram chat IDs to block for downloading Instagram posts (for example, `["1", "2"]`)
     * `BLACK_LIST_VOICE` - list of Telegram chat IDs to block for transcribing voice messages (for example, `["1", "2"]`)
     * `GPT_GOOGLE_GEMINI_API_KEY` - API key for Google Gemini (get from [aistudio from Google](https://aistudio.google.com/apikey))
-    * `INSTA_USERNAME` - Instagram username
-    * `INSTA_PASSWORD` - Instagram password
     * `WHISPER_MODEL` - Whisper model to use (for example, `large-v3-turbo`)
     * `WHISPER_DEVICE` - device to use for Whisper (for example, `cpu`)
     * `WHISPER_COMPUTE_TYPE` - compute type to use for Whisper (for example, `int8`)
