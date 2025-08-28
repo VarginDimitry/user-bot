@@ -35,7 +35,10 @@ def register_handlers(client: MegaTelegramClient, config: RootConfig) -> None:
     )
     client.add_event_handler(
         transcribe_voice,
-        NewMessage(func=lambda e: e.message.is_reply, pattern=r"^/transcribe$"),
+        NewMessage(
+            func=lambda e: (e.message.voice or e.message.video_note) and e.message.is_reply,
+            pattern=r"^/transcribe$",
+        ),
     )
 
     ### GPT HANDLERS
