@@ -19,7 +19,7 @@ async def bot_help(event: NewMessage.Event) -> None:
         f"- Скачать фото/видео из Instagram (Отправь ссылку на instagram)"
     )
 
-    await client.send_message(
+    await client.safe_send_message(
         entity=message.peer_id,
         message=text,
         reply_to=message.id,

@@ -18,7 +18,7 @@ async def download_insta(
     user = cast(User, await message.get_sender())
 
     new_link = await insta_service.get_new_link(message.text)
-    await client.send_message(
+    await client.safe_send_message(
         entity=message.peer_id,
         message=new_link,
         reply_to=message.reply_to_msg_id if user.is_self else message.id,
