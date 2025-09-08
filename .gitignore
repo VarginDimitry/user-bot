@@ -268,7 +268,6 @@ Icon
 Network Trash Folder
 Temporary Items
 .apdisk
-.vscode
 .ci/helm/.env
 .ci/helm/config.json
 database/job.yaml

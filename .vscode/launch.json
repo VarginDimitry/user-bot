@@ -1,0 +1,15 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Run Bot",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/src/main.py",
+            "cwd": "${workspaceFolder}/src",
+            "env": {
+                "PYTHONPATH": "${PYTHONPATH}:${workspaceFolder}:${workspaceFolder}/src"
+            },
+        }
+    ]
+}

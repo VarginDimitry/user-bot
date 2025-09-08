@@ -1,0 +1,67 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "ruff-lint",
+      "type": "shell",
+      "command": "uvx ruff check ${workspaceFolder}/src --fix",
+      "problemMatcher": [],
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared"
+      }
+    },
+    {
+      "label": "isort",
+      "type": "shell",
+      "command": "uvx isort ${workspaceFolder}/src",
+      "problemMatcher": [],
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared"
+      }
+    },
+    {
+      "label": "ruff-format-ruff",
+      "type": "shell",
+      "command": "uvx ruff format ${workspaceFolder}/src",
+      "problemMatcher": [],
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared"
+      }
+    },
+    {
+      "label": "ruff-format",
+      "type": "shell",
+      "dependsOrder": "sequence",
+      "dependsOn": ["isort", "ruff-format-ruff"],
+      "problemMatcher": [],
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared"
+      }
+    },
+    {
+      "label": "check",
+      "type": "shell",
+      "dependsOn": ["ruff-format", "ruff-lint"],
+      "dependsOrder": "sequence",
+      "problemMatcher": [],
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared"
+      }
+    }
+  ]
+}
