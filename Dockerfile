@@ -1,7 +1,6 @@
 FROM python:3.12.11-slim AS builder
 
-ENV UV_SYSTEM_PYTHON=1
-WORKDIR /app
+WORKDIR /packages
 
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
@@ -15,16 +14,21 @@ COPY pyproject.toml uv.lock ./
 
 COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
 
-RUN uv sync --locked --no-install-project
+RUN --mount=type=cache,target=/root/.cache/uv \
+    --mount=type=bind,source=uv.lock,target=uv.lock \
+    --mount=type=bind,source=pyproject.toml,target=pyproject.toml \
+    uv sync --locked --no-install-project
 
-###############################################
 FROM python:3.12.11-slim
 
 WORKDIR /app
 
-ADD src .
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+    ffmpeg libavcodec-extra
 
-COPY --from=builder /app/.venv/lib/python3.12/site-packages /usr/local/lib/python3.12/site-packages
-COPY --from=builder /app/.venv/bin/* /usr/local/bin/
+COPY --from=builder /packages/.venv/lib/python3.12/site-packages /usr/local/lib/python3.12/site-packages
+COPY src /app
 
-CMD ["python", "/app/main.py"]
+# Set entrypoint
+CMD ["python", "main.py"]
