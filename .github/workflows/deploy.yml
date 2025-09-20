@@ -20,7 +20,9 @@ jobs:
             set -e
             cd /root/apps/user-bot
             git pull --rebase
-            docker system prune
+            docker system prune -f
             docker compose build
             docker compose down
-            docker compose up -d
+            docker compose up -d --build
+            echo "=== Проверка контейнера ==="
+            docker inspect -f "{{.State.Running}}" user-bot || (echo "Контейнер не запущен!" && exit 1)
