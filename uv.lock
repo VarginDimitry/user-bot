@@ -2063,7 +2063,7 @@ requires-dist = [
     { name = "ffmpeg-python", specifier = ">=0.2.0" },
     { name = "google-genai", specifier = ">=1.21.1" },
     { name = "hf-xet", specifier = ">=1.1.5" },
-    { name = "instagrapi", specifier = ">=2.2.1" },
+    { name = "instagrapi", specifier = ">=2.1.3" },
     { name = "isort", marker = "extra == 'lint'", specifier = ">=6.0.1" },
     { name = "mypy", marker = "extra == 'lint'", specifier = ">=1.16.1" },
     { name = "notebook", marker = "extra == 'dev'", specifier = ">=7.4.3" },
