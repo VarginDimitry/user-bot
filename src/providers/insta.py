@@ -3,7 +3,7 @@ from logging import Logger
 from dishka import provide, Provider, Scope
 from instagrapi import Client
 
-from config import InstaSettings, RootConfig
+from config import RootConfig
 from services.insta_service import InstaService
 
 

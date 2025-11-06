@@ -1,14 +1,13 @@
 import asyncio
-from functools import wraps
-from pathlib import Path
 import re
 from logging import Logger
+from pathlib import Path
 from typing import Any, Awaitable, Callable, TypeVar
+
 from instagrapi import Client
 
 from config import RootConfig
 from dto.instagram import MyMedia
-
 
 F = TypeVar("F", bound=Callable[..., Awaitable[Any]])
 
@@ -29,7 +28,9 @@ class InstaService:
     DD_LINK_REGEX = re.compile(r"https?://(www\.)?ddinstagram\.com/.*")
     LOGIN_JSON_PATH = Path("InstagramSession.json")
 
-    def __init__(self, logger: Logger, config: RootConfig, insta_client: Client) -> None:
+    def __init__(
+        self, logger: Logger, config: RootConfig, insta_client: Client
+    ) -> None:
         self.logger = logger
         self.config = config
         self.client = insta_client
@@ -39,7 +40,9 @@ class InstaService:
 
     async def get_media_info_by_link(self, url: str) -> MyMedia:
         try:
-            media_info = await asyncio.to_thread(self.client.media_info, self.client.media_pk_from_url(url))
+            media_info = await asyncio.to_thread(
+                self.client.media_info, self.client.media_pk_from_url(url)
+            )
             return MyMedia.model_validate(media_info, from_attributes=True)
         except Exception as e:
             self.logger.error(e)
@@ -76,7 +79,6 @@ class InstaService:
             return link
 
         return link.replace("instagram.com", "ddinstagram.com")
-
 
     @classmethod
     def process_url(cls, url: str) -> str:
