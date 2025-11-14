@@ -3,13 +3,13 @@ from logging import Logger
 from dishka import provide, Provider, Scope
 from instagrapi import Client
 
-from config import RootConfig
+from config import Config
 from services.insta_service import InstaService
 
 
 class InstaProvider(Provider):
     @provide(scope=Scope.APP)
-    def provide_insta_client(self, config: RootConfig, logger: Logger) -> Client:
+    def provide_insta_client(self, config: Config, logger: Logger) -> Client:
         return Client(
             delay_range=[config.instagram.delay_from, config.instagram.delay_to],
             logger=logger.getChild("instagrapi"),
@@ -19,7 +19,7 @@ class InstaProvider(Provider):
     async def provide_insta_service(
         self,
         logger: Logger,
-        config: RootConfig,
+        config: Config,
         insta_client: Client,
     ) -> InstaService:
         service = InstaService(

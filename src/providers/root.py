@@ -7,7 +7,7 @@ from coloredlogs import ColoredFormatter
 from dishka import from_context, provide, Provider, Scope
 from telethon.events.common import EventCommon
 
-from config import RootConfig
+from config import Config
 from utils.custom_logging import TelegramLoggerHandler
 
 
@@ -15,15 +15,15 @@ class RootProvider(Provider):
     event = from_context(EventCommon, scope=Scope.REQUEST)
 
     @provide(scope=Scope.APP)
-    def provide_config(self) -> RootConfig:
-        return RootConfig()
+    def provide_config(self) -> Config:
+        return Config()
 
     @provide(scope=Scope.APP)
-    def provide_telegram_bot(self, config: RootConfig) -> Bot:
+    def provide_telegram_bot(self, config: Config) -> Bot:
         return Bot(config.logger.bot_token)
 
     @provide(scope=Scope.APP)
-    def provide_logger(self, config: RootConfig, bot: Bot) -> logging.Logger:
+    def provide_logger(self, config: Config, bot: Bot) -> logging.Logger:
         logger = logging.getLogger(config.user_bot.app_name)
         logger.setLevel(logging.INFO)
 

@@ -45,7 +45,14 @@ class InstaSettings(BaseSettings):
     black_list: list[int] = Field(default_factory=list)
 
 
-class RootConfig(BaseSettings):
+class SqliteSettings(BaseSettings):
+    model_config = ConfigDict(extra="ignore")
+
+    path: str
+    echo: bool = False
+
+
+class Config(BaseSettings):
     model_config = ConfigDict(
         extra="ignore",
         env_file=".env",
@@ -59,3 +66,5 @@ class RootConfig(BaseSettings):
     instagram: InstaSettings
     gemini: GeminiSettings
     whisper: WhisperSettings
+
+    sqlite: SqliteSettings = Field(default_factory=SqliteSettings)

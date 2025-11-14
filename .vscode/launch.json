@@ -10,6 +10,45 @@
             "env": {
                 "PYTHONPATH": "${PYTHONPATH}:${workspaceFolder}:${workspaceFolder}/src"
             },
+            "envFile": "${workspaceFolder}/.env"
+        },
+        // almbic
+        {
+            "name": "generate migration",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "alembic",
+            "args": "revision -m \"${input:migrationMessage}\" --autogenerate --rev-id \"$(date +%s%3)\"",
+            "env": {
+                "PYTHONPATH": "${PYTHONPATH}:${workspaceFolder}/src"
+            }
+        },
+        {
+            "name": "migrate up",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "alembic",
+            "args": "upgrade head",
+            "env": {
+                "PYTHONPATH": "${PYTHONPATH}:${workspaceFolder}/src"
+            }
+        },
+        {
+            "name": "migrate down",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "alembic",
+            "args": "downgrade -1",
+            "env": {
+                "PYTHONPATH": "${PYTHONPATH}:${workspaceFolder}/src"
+            }
+        }
+    ],
+    "inputs": [
+        {
+            "id": "migrationMessage",
+            "type": "promptString",
+            "description": "Migration message"
         }
     ]
 }

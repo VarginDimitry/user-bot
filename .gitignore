@@ -1,3 +1,4 @@
+**/*.db
 /src/*.session
 /src/*.session-journal
 **/Telethon.session

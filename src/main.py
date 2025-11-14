@@ -4,8 +4,9 @@ from typing import Awaitable, cast
 
 from dishka import make_async_container
 
-from config import RootConfig
+from config import Config
 from handlers import register_handlers
+from providers.db import DatabaseProvider
 from providers.gpt import GPTProvider
 from providers.insta import InstaProvider
 from providers.root import RootProvider
@@ -16,12 +17,13 @@ from utils.custom_telegram_client import MegaTelegramClient
 async def main() -> None:
     di_container = make_async_container(
         RootProvider(),
+        DatabaseProvider(),
         VoiceProvider(),
         GPTProvider(),
         InstaProvider(),
     )
 
-    config = await di_container.get(RootConfig)
+    config = await di_container.get(Config)
     logger = await di_container.get(Logger)
     client = MegaTelegramClient(
         session=config.user_bot.app_name,

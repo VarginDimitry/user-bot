@@ -6,8 +6,11 @@ authors = ["Dmitry Vargin"]
 readme = "README.md"
 requires-python = "==3.12.11"
 dependencies = [
+    "advanced-alchemy>=1.8.0",
     "aiofiles>=24.1.0",
     "aiogram>=3.20.0.post0",
+    "aiosqlite>=0.21.0",
+    "alembic>=1.17.1",
     "colorama>=0.4.6",
     "dishka>=1.6.0",
     "faster-whisper>=1.1.1",
@@ -18,8 +21,10 @@ dependencies = [
     "pillow>=11.2.1",
     "pydantic>=2.11.5",
     "pydantic-settings>=2.10.0",
+    "sqlalchemy>=2.0.44",
     "telethon>=1.40.0",
     "tgcrypto>=1.2.5",
+    "uuid-utils>=0.11.1",
 ]
 
 [project.optional-dependencies]
@@ -41,3 +46,27 @@ line_length = 120
 order_by_type = false
 combine_as_imports = true
 
+[tool.ruff]
+lint.extend-ignore = ["E402"]
+
+[tool.ruff.lint.per-file-ignores]
+"src/migrations/env.py" = ["E402"]
+
+[tool.pyrefly]
+project-includes = ["src"]
+search-path = ["src", "."]
+project-excludes = [
+    "**/node_modules",
+    "**/__pycache__",
+    "**/*venv/**/*",
+    "**/.[!/.]*"
+]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+filterwarnings = [
+    "ignore::DeprecationWarning",
+]
+pythonpath =[
+    ".", "src",
+]

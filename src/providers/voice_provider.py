@@ -3,15 +3,17 @@ from logging import Logger
 
 from dishka import provide, Provider, Scope
 from faster_whisper import WhisperModel
+from sqlalchemy.ext.asyncio import AsyncSession
 
-from config import RootConfig
+from config import Config
+from repositories.voice_cache import VoiceCacheRepository
 from services.voice_service import VoiceService
 
 
 class VoiceProvider(Provider):
     @provide(scope=Scope.APP)
     async def provide_whisper_model(
-        self, logger: Logger, config: RootConfig
+        self, logger: Logger, config: Config
     ) -> WhisperModel:
         logger.info("Voice model start downloading")
 
@@ -30,7 +32,20 @@ class VoiceProvider(Provider):
         return model
 
     @provide(scope=Scope.REQUEST)
+    def provide_voice_cache_repository(
+        self, session: AsyncSession
+    ) -> VoiceCacheRepository:
+        return VoiceCacheRepository(session=session)
+
+    @provide(scope=Scope.REQUEST)
     def provide_voice_service(
-        self, logger: Logger, whisper_model: WhisperModel
+        self,
+        logger: Logger,
+        whisper_model: WhisperModel,
+        voice_cache_repository: VoiceCacheRepository,
     ) -> VoiceService:
-        return VoiceService(logger=logger, whisper_model=whisper_model)
+        return VoiceService(
+            logger=logger,
+            whisper_model=whisper_model,
+            voice_cache_repository=voice_cache_repository,
+        )

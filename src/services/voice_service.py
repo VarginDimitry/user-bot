@@ -7,13 +7,37 @@ from aiofiles.tempfile import NamedTemporaryFile
 from faster_whisper import WhisperModel
 from telethon.tl.patched import Message
 
+from models import VoiceCacheModel
+from repositories.voice_cache import VoiceCacheRepository
+
 
 class VoiceService:
-    def __init__(self, logger: Logger, whisper_model: WhisperModel):
+    def __init__(
+        self,
+        logger: Logger,
+        whisper_model: WhisperModel,
+        voice_cache_repository: VoiceCacheRepository,
+    ):
         self.logger = logger
         self.model = whisper_model
+        self.voice_cache_repository = voice_cache_repository
 
     async def transcribe_voice_message(self, message: Message) -> str:
+        voice_id = self.get_voice_id(message)
+        if voice_id:
+            if voice_cache := await self.voice_cache_repository.get_one_or_none(
+                message_id=voice_id
+            ):
+                return voice_cache.value
+
+        result = await self._transcribe_voice_message(message)
+
+        await self.voice_cache_repository.add(
+            VoiceCacheModel(message_id=voice_id, value=result)
+        )
+        return result
+
+    async def _transcribe_voice_message(self, message: Message) -> str:
         async with (
             NamedTemporaryFile(
                 suffix=".mp4" if message.video_note else ".ogg"
@@ -58,3 +82,9 @@ class VoiceService:
             .output(wav_file_path, loglevel="quiet")
             .run(overwrite_output=True)
         )
+
+    @classmethod
+    def get_voice_id(cls, message: Message) -> int | None:
+        if message.media and message.media.voice and message.media.document:
+            return message.media.document.id
+        return None

@@ -4,7 +4,7 @@ from telethon.events import NewMessage
 from telethon.tl.patched import Message
 from telethon.tl.types import Chat, User
 
-from config import RootConfig
+from config import Config
 from handlers.gpt import ask_gpt
 from handlers.help import bot_help
 from handlers.insta import download_insta
@@ -13,7 +13,7 @@ from services.insta_service import InstaService
 from utils.custom_telegram_client import MegaTelegramClient
 
 
-def register_handlers(client: MegaTelegramClient, config: RootConfig) -> None:
+def register_handlers(client: MegaTelegramClient, config: Config) -> None:
     ### HELP HANDLERS
     client.add_event_handler(
         bot_help,

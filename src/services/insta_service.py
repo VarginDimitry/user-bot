@@ -6,7 +6,7 @@ from typing import Any, Awaitable, Callable, TypeVar
 
 from instagrapi import Client
 
-from config import RootConfig
+from config import Config
 from dto.instagram import MyMedia
 
 F = TypeVar("F", bound=Callable[..., Awaitable[Any]])
@@ -28,9 +28,7 @@ class InstaService:
     DD_LINK_REGEX = re.compile(r"https?://(www\.)?ddinstagram\.com/.*")
     LOGIN_JSON_PATH = Path("InstagramSession.json")
 
-    def __init__(
-        self, logger: Logger, config: RootConfig, insta_client: Client
-    ) -> None:
+    def __init__(self, logger: Logger, config: Config, insta_client: Client) -> None:
         self.logger = logger
         self.config = config
         self.client = insta_client
