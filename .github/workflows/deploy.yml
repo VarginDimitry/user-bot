@@ -22,6 +22,7 @@ jobs:
             git pull --rebase
             docker system prune -f
             docker compose down
+            docker network create usrbot-network
             docker compose up -d --build
             echo "=== Проверка контейнера ==="
             docker inspect -f "{{.State.Running}}" user-bot || (echo "Контейнер не запущен!" && exit 1)
