@@ -2,9 +2,9 @@ import asyncio
 from logging import Logger
 from typing import cast
 
-from aiofiles.threadpool.binary import AsyncBufferedIOBase
 import ffmpeg
 from aiofiles.tempfile import NamedTemporaryFile
+from aiofiles.threadpool.binary import AsyncBufferedIOBase
 from faster_whisper import WhisperModel
 from telethon.tl.patched import Message
 
@@ -48,16 +48,20 @@ class VoiceService:
             if not path:
                 self.logger.error("Failed to download voice message")
                 return ""
-            
+
             if result := await self._transcribe_using_gpt(input_voice, input_ext):
                 return result
-            
+
             async with NamedTemporaryFile(suffix=".wav") as output_voice:
-                return await self._transcribe_using_local_model(input_voice, output_voice)
-            
-    async def _transcribe_using_gpt(self, input_voice: AsyncBufferedIOBase, input_ext: str) -> str:
+                return await self._transcribe_using_local_model(
+                    input_voice, output_voice
+                )
+
+    async def _transcribe_using_gpt(
+        self, input_voice: AsyncBufferedIOBase, input_ext: str
+    ) -> str:
         return await self.gpt_service.ask_with_file(
-            prompt='Detect the language (usually RU) and generate a transcript of the speech. Send only text, without any additional comments.',
+            prompt="Detect the language (usually RU) and generate a transcript of the speech. Send only text, without any additional comments.",
             file_path=input_voice.name,
             mime_type=self.gpt_service.MIME_TYPE_MAP.get(input_ext),
         )
@@ -72,7 +76,7 @@ class VoiceService:
             str(output_voice.name),
         )
         return self._get_transcribe_from_wav(cast(str, output_voice.name))
-    
+
     def _get_transcribe_from_wav(self, voice: str) -> str:
         try:
             segments, _ = self.model.transcribe(
