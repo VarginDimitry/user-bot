@@ -19,9 +19,9 @@ class DatabaseProvider(Provider):
         sqlalchemy_logger = logging.getLogger("sqlalchemy.engine")
         sqlalchemy_logger.propagate = False
         return create_async_engine(
-            url=config.sqlite.path,
-            echo=config.sqlite.echo,
-            connect_args={"check_same_thread": False},
+            str(config.postgres.dns),
+            echo=config.postgres.echo,
+            pool_size=config.postgres.max_pool_size,
             json_serializer=json_serializer,
         )
 

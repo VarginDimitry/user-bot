@@ -40,7 +40,7 @@ def run_migrations_offline() -> None:
     script output.
 
     """
-    database_url = os.environ.get("SQLITE__PATH")
+    database_url = os.environ.get("POSTGRES__DNS")
     context.configure(
         url=database_url,
         target_metadata=target_metadata,
@@ -60,9 +60,9 @@ def run_migrations_online() -> None:
 
     """
     if config.get_main_option("sqlalchemy.url") is None:
-        database_url: str | None = os.environ.get("SQLITE__PATH")
+        database_url: str | None = os.environ.get("POSTGRES__DNS")
         if not database_url:
-            raise RuntimeError("SQLITE__PATH environment variable is not set.")
+            raise RuntimeError("POSTGRES__DNS environment variable is not set.")
         config.set_main_option("sqlalchemy.url", remove_async_driver(database_url))
 
     connectable = engine_from_config(

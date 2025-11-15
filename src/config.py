@@ -1,4 +1,4 @@
-from pydantic import ConfigDict, Field
+from pydantic import AnyUrl, ConfigDict, Field, model_validator
 from pydantic_settings import BaseSettings
 
 
@@ -49,7 +49,27 @@ class SqliteSettings(BaseSettings):
     model_config = ConfigDict(extra="ignore")
 
     path: str
-    echo: bool = False
+    echo: bool = True
+
+
+class PostgresConfig(BaseSettings):
+    model_config = ConfigDict(extra="ignore")
+
+    dns: AnyUrl
+    echo: bool = True
+    max_pool_size: int = 5
+
+    @property
+    def dns_driver(self) -> str:
+        dns = str(self.dns)
+        return dns[: dns.index(":")]
+
+    @property
+    def dns_dialect(self) -> str:
+        driver = self.dns_driver
+        if (plus_index := driver.find("+")) != -1:
+            driver = driver[:plus_index]
+        return driver
 
 
 class Config(BaseSettings):
@@ -67,4 +87,11 @@ class Config(BaseSettings):
     gemini: GeminiSettings
     whisper: WhisperSettings
 
-    sqlite: SqliteSettings = Field(default_factory=SqliteSettings)
+    sqlite: SqliteSettings | None = None
+    postgres: PostgresConfig | None = None
+
+    @model_validator(mode="after")
+    def validate_database(self) -> "Config":
+        if bool(self.sqlite) ^ bool(self.postgres):
+            raise ValueError("Only one database can be used")
+        return self

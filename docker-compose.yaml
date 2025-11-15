@@ -11,4 +11,29 @@ services:
     restart: always
     volumes:
       - ./src:/app
-      - ./database.db:/app/database.db
+    networks:
+      - usrbot-network
+    depends_on:
+      - postgres
+
+  postgres:
+    image: postgres:latest
+    container_name: usrbot-postgres
+    environment:
+      POSTGRES_USER: usrbot
+      POSTGRES_PASSWORD: usrbot
+      POSTGRES_DB: usrbot
+    ports:
+      - "5131:5432"
+    restart: always
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - usrbot-network
+
+networks:
+  usrbot-network:
+    external: true
+
+volumes:
+  pgdata:
