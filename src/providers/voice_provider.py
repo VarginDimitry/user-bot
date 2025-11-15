@@ -7,6 +7,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from config import Config
 from repositories.voice_cache import VoiceCacheRepository
+from services.gpt_service import GPTService
 from services.voice_service import VoiceService
 
 
@@ -43,9 +44,11 @@ class VoiceProvider(Provider):
         logger: Logger,
         whisper_model: WhisperModel,
         voice_cache_repository: VoiceCacheRepository,
+        gpt_service: GPTService,
     ) -> VoiceService:
         return VoiceService(
             logger=logger,
             whisper_model=whisper_model,
             voice_cache_repository=voice_cache_repository,
+            gpt_service=gpt_service,
         )
