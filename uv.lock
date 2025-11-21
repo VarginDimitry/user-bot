@@ -28,7 +28,7 @@ wheels = [
 
 [[package]]
 name = "aiogram"
-version = "3.20.0.post0"
+version = "3.22.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "aiofiles" },
@@ -38,9 +38,9 @@ dependencies = [
     { name = "pydantic" },
     { name = "typing-extensions" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/bd/80/bd7b56707ed707317caec4a9729c0d795bce438662613ccc9add50568363/aiogram-3.20.0.post0.tar.gz", hash = "sha256:2443799b4514ac251fcf2d561603e250f8763808542222fa1136901058eda9a3", size = 1487433, upload-time = "2025-04-16T20:30:02.04Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/92/2c/fe0845a97f6126357d20163ede8f76bc161f73122123c6548ca19d9a12c7/aiogram-3.22.0.tar.gz", hash = "sha256:c483f81e37aeea8e7f592c9bd14f6acc80d9b7a2698e296a45bf47ff60a98510", size = 1520414, upload-time = "2025-08-17T16:20:45.471Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/03/18/c1ec098e7bd683974c56b97ef0c3e41260d4c4a88168a30238ec97e4faa3/aiogram-3.20.0.post0-py3-none-any.whl", hash = "sha256:c8f5a68b0729e74efa15a7fc285bd49fa3d0603de5e424404219a822f8e5f4d1", size = 666622, upload-time = "2025-04-16T20:29:59.816Z" },
+    { url = "https://files.pythonhosted.org/packages/ba/e5/9f9fae7b50ed502e33121dd62a7e9b076d00630eaafe1dd7fda64f7e8625/aiogram-3.22.0-py3-none-any.whl", hash = "sha256:1c6eceb078ff62cf0556a5466cf3e7e8119678c26cc56803b7ac5f73633934a8", size = 698216, upload-time = "2025-08-17T16:20:43.354Z" },
 ]
 
 [[package]]
@@ -99,16 +99,16 @@ wheels = [
 
 [[package]]
 name = "alembic"
-version = "1.17.1"
+version = "1.17.2"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "mako" },
     { name = "sqlalchemy" },
     { name = "typing-extensions" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/6e/b6/2a81d7724c0c124edc5ec7a167e85858b6fd31b9611c6fb8ecf617b7e2d3/alembic-1.17.1.tar.gz", hash = "sha256:8a289f6778262df31571d29cca4c7fbacd2f0f582ea0816f4c399b6da7528486", size = 1981285, upload-time = "2025-10-29T00:23:16.667Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/02/a6/74c8cadc2882977d80ad756a13857857dbcf9bd405bc80b662eb10651282/alembic-1.17.2.tar.gz", hash = "sha256:bbe9751705c5e0f14877f02d46c53d10885e377e3d90eda810a016f9baa19e8e", size = 1988064, upload-time = "2025-11-14T20:35:04.057Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/a5/32/7df1d81ec2e50fb661944a35183d87e62d3f6c6d9f8aff64a4f245226d55/alembic-1.17.1-py3-none-any.whl", hash = "sha256:cbc2386e60f89608bb63f30d2d6cc66c7aaed1fe105bd862828600e5ad167023", size = 247848, upload-time = "2025-10-29T00:23:18.79Z" },
+    { url = "https://files.pythonhosted.org/packages/ba/88/6237e97e3385b57b5f1528647addea5cc03d4d65d5979ab24327d41fb00d/alembic-1.17.2-py3-none-any.whl", hash = "sha256:f483dd1fe93f6c5d49217055e4d15b905b425b6af906746abb35b69c1996c4e6", size = 248554, upload-time = "2025-11-14T20:35:05.699Z" },
 ]
 
 [[package]]
@@ -433,11 +433,11 @@ wheels = [
 
 [[package]]
 name = "dishka"
-version = "1.6.0"
+version = "1.7.2"
 source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/11/04/f3add05678a3ac1ab7736faae45b18b5365d84b1cd3cf3af64b09a1d6a5f/dishka-1.6.0.tar.gz", hash = "sha256:f1fa5ec7e980d4f618d0c425d1bb81d8e9414894d8ec6553b197d2298774e12f", size = 65971, upload-time = "2025-05-18T21:40:53.259Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/40/d7/1be31f5ef32387059190353f9fa493ff4d07a1c75fa856c7566ca45e0800/dishka-1.7.2.tar.gz", hash = "sha256:47d4cb5162b28c61bf5541860e605ed5eaf5c667122299c7ef657c86fc8d5a49", size = 68132, upload-time = "2025-09-24T21:23:05.135Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/76/6b/f9cd08543c4f55bf129a0ebce5c09e43528235dd6e7cb906761ca094979a/dishka-1.6.0-py3-none-any.whl", hash = "sha256:ab1aedee152ce7bb11cfd2673d7ce4001fe2b330d14e84535d7525a68430b2c2", size = 90789, upload-time = "2025-05-18T21:40:51.352Z" },
+    { url = "https://files.pythonhosted.org/packages/b7/b9/89381173b4f336e986d72471198614806cd313e0f85c143ccb677c310223/dishka-1.7.2-py3-none-any.whl", hash = "sha256:f6faa6ab321903926b825b3337d77172ee693450279b314434864978d01fbad3", size = 94774, upload-time = "2025-09-24T21:23:03.246Z" },
 ]
 
 [[package]]
@@ -1962,16 +1962,15 @@ wheels = [
 
 [[package]]
 name = "telethon"
-version = "1.40.0"
+version = "1.42.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "pyaes" },
     { name = "rsa" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/58/af/9b7111e3f63fffe8e55b7ceb8bda023173e2052f420b6debcb25fd2fbc15/telethon-1.40.0.tar.gz", hash = "sha256:40e83326877a2e68b754d4b6d0d1ca5ac924110045b039e02660f2d67add97db", size = 646723, upload-time = "2025-04-21T09:12:10.506Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/8c/10/8c8c9476bfce767a856d8aaf9eae8ea1869df4e970da16f1c5b638fd1b0c/telethon-1.42.0.tar.gz", hash = "sha256:032e95511261d5ead719f75494c6c85ece2ce71816b54f3c65d6ccc371d6994d", size = 672734, upload-time = "2025-11-05T19:15:19.849Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/2c/5a/c5370edb3215d19a6e858f4169b8eec725ba55f9d39df0f557508048c037/Telethon-1.40.0-py3-none-any.whl", hash = "sha256:146fd4cb2a7afa66bc67f9c2167756096a37b930f65711a3e7399ec9874dcfa7", size = 722013, upload-time = "2025-04-21T09:12:08.399Z" },
-    { url = "https://files.pythonhosted.org/packages/ce/b0/78f74085b6c88c2bf2bec39c67267cd9ba6af24ceaea9654fb0c272a53da/telethon-1.40.0-py3-none-any.whl", hash = "sha256:1aebaca04fd8410968816645bdbcc0baeff55429b6d6bec37e647417bb8e8a2c", size = 744897, upload-time = "2025-09-01T15:32:34.212Z" },
+    { url = "https://files.pythonhosted.org/packages/e4/e4/8ce0ff55251381966a7c3f88bd5b34abda79b225a8e7fb51ddef3b849c94/telethon-1.42.0-py3-none-any.whl", hash = "sha256:cf361c94586bcacd6d0fc8959a2bce509d1bb37007fe6476a80c4fb4a2decc29", size = 748466, upload-time = "2025-11-05T19:15:18.241Z" },
 ]
 
 [[package]]
@@ -2179,16 +2178,16 @@ lint = [
 requires-dist = [
     { name = "advanced-alchemy", specifier = ">=1.8.0" },
     { name = "aiofiles", specifier = ">=24.1.0" },
-    { name = "aiogram", specifier = ">=3.20.0.post0" },
-    { name = "alembic", specifier = ">=1.17.1" },
+    { name = "aiogram", specifier = ">=3.22.0" },
+    { name = "alembic", specifier = ">=1.17.2" },
     { name = "asyncpg", specifier = ">=0.30.0" },
     { name = "colorama", specifier = ">=0.4.6" },
-    { name = "dishka", specifier = ">=1.6.0" },
+    { name = "dishka", specifier = ">=1.7.2" },
     { name = "faster-whisper", specifier = ">=1.1.1" },
     { name = "ffmpeg-python", specifier = ">=0.2.0" },
     { name = "google-genai", specifier = ">=1.21.1" },
     { name = "hf-xet", specifier = ">=1.1.5" },
-    { name = "instagrapi", specifier = ">=2.1.3" },
+    { name = "instagrapi", specifier = ">=2.2.1" },
     { name = "isort", marker = "extra == 'lint'", specifier = ">=6.0.1" },
     { name = "mypy", marker = "extra == 'lint'", specifier = ">=1.16.1" },
     { name = "notebook", marker = "extra == 'dev'", specifier = ">=7.4.3" },
@@ -2198,7 +2197,7 @@ requires-dist = [
     { name = "pydantic-settings", specifier = ">=2.10.0" },
     { name = "ruff", marker = "extra == 'lint'", specifier = ">=0.12.0" },
     { name = "sqlalchemy", specifier = ">=2.0.44" },
-    { name = "telethon", specifier = ">=1.40.0" },
+    { name = "telethon", specifier = ">=1.42.0" },
     { name = "tgcrypto", specifier = ">=1.2.5" },
     { name = "types-aiofiles", marker = "extra == 'lint'", specifier = ">=24.1.0.20250606" },
     { name = "uuid-utils", specifier = ">=0.11.1" },

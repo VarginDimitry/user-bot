@@ -40,10 +40,11 @@ class RootProvider(Provider):
         console_handler.setFormatter(colored_formatter)
         logger.addHandler(console_handler)
 
-        telegram_handler = TelegramLoggerHandler(bot=bot, config=config)
-        telegram_handler.setLevel(logging.ERROR)
-        telegram_handler.setFormatter(formatter)
-        logger.addHandler(telegram_handler)
+        if config.logger.enable_telegram:
+            telegram_handler = TelegramLoggerHandler(bot=bot, config=config)
+            telegram_handler.setLevel(logging.ERROR)
+            telegram_handler.setFormatter(formatter)
+            logger.addHandler(telegram_handler)
 
         return logger
 

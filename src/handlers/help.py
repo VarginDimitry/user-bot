@@ -1,12 +1,14 @@
 from typing import cast
 
+from dishka import FromDishka
+from sqlalchemy.ext.asyncio import AsyncSession
 from telethon.events import NewMessage
 from telethon.tl.patched import Message
 
 from utils.custom_telegram_client import MegaTelegramClient
 
 
-async def bot_help(event: NewMessage.Event) -> None:
+async def bot_help(event: NewMessage.Event, _: FromDishka[AsyncSession]) -> None:
     message = cast(Message, event.message)
     client = cast(MegaTelegramClient, event.client)
     me = await client.get_me()

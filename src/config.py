@@ -13,6 +13,7 @@ class UserBotSettings(BaseSettings):
 class LoggerSettings(BaseSettings):
     model_config = ConfigDict(extra="ignore")
 
+    enable_telegram: bool = True
     bot_token: str
     error_logger_send_to: int
 

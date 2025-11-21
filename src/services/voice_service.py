@@ -28,11 +28,15 @@ class VoiceService:
 
     async def transcribe_voice_message(self, message: Message) -> str:
         voice_id = self.get_voice_id(message)
-        if voice_id:
-            if voice_cache := await self.voice_cache_repository.get_one_or_none(
-                message_id=voice_id
-            ):
-                return voice_cache.value
+        if not voice_id:
+            return ""
+
+        await self.voice_cache_repository.lock_wait(voice_id)
+
+        if voice_cache := await self.voice_cache_repository.get_one_or_none(
+            message_id=voice_id
+        ):
+            return voice_cache.value
 
         result = await self._transcribe_voice_message(message)
 
