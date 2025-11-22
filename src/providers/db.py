@@ -40,7 +40,6 @@ class DatabaseProvider(Provider):
             session_maker() as session,  # pyrefly: ignore[bad-context-manager]
             session.begin(),  # pyrefly: ignore[missing-attribute]
         ):
-            exc = yield session  # pyrefly: ignore[invalid-yield]
+            exc: Exception | None = yield session
             if exc is not None:
                 await session.rollback()  # pyrefly: ignore[missing-attribute]
-                # raise exc

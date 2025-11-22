@@ -91,8 +91,8 @@ class Config(BaseSettings):
     sqlite: SqliteSettings | None = None
     postgres: PostgresConfig | None = None
 
-    @model_validator(mode="after")
-    def validate_database(self) -> "Config":
-        if bool(self.sqlite) ^ bool(self.postgres):
-            raise ValueError("Only one database can be used")
-        return self
+    # @model_validator(mode="after")
+    # def validate_database(self) -> "Config":
+    #     if bool(self.sqlite) ^ bool(self.postgres):
+    #         return self
+    #     raise ValueError("Only one database can be used")
