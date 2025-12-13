@@ -30,7 +30,6 @@ class VoiceService:
         voice_id = self.get_voice_id(message)
         if not voice_id:
             return ""
-
         await self.voice_cache_repository.lock_wait(voice_id)
 
         if voice_cache := await self.voice_cache_repository.get_one_or_none(
@@ -111,6 +110,10 @@ class VoiceService:
 
     @classmethod
     def get_voice_id(cls, message: Message) -> int | None:
-        if message.media and message.media.voice and message.media.document:
+        if (
+            message.media
+            and (message.media.voice or message.media.round)
+            and message.media.document
+        ):
             return message.media.document.id
         return None

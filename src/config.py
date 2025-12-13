@@ -1,4 +1,4 @@
-from pydantic import AnyUrl, ConfigDict, Field, model_validator
+from pydantic import AnyUrl, ConfigDict, Field
 from pydantic_settings import BaseSettings
 
 

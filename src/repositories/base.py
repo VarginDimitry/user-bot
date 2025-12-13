@@ -6,7 +6,6 @@ from utils.filters import FiltersModel
 
 
 class BaseRepository(SQLAlchemyAsyncRepository[ModelT]):
-
     async def _lock_wait(self, key: str) -> None:
         stmt = text("SELECT pg_advisory_xact_lock(hashtextextended(:key, 0))")
         await self.session.execute(stmt, {"key": key})
