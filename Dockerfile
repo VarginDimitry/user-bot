@@ -4,6 +4,7 @@ WORKDIR /packages
 
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
+    git \
     gcc \
     python3-dev \
     libffi-dev \
