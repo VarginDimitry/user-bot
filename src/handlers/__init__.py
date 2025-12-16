@@ -2,7 +2,7 @@ from typing import cast
 
 from telethon.events import NewMessage
 from telethon.tl.patched import Message
-from telethon.tl.types import Chat, User
+from telethon.tl.types import Channel, Chat, User
 
 from config import Config
 from handlers.gpt import ask_gpt
@@ -55,9 +55,12 @@ def register_handlers(client: MegaTelegramClient, config: Config) -> None:
     async def download_insta_func_filter(event: NewMessage.Event) -> bool:
         message = cast(Message, event.message)
         sender = cast(User, await message.get_sender())
-        chat = cast(Chat, await message.get_chat())
+        chat = cast(User | Chat | Channel, await message.get_chat())
 
         if chat.id in config.instagram.black_list:
+            return False
+
+        if isinstance(chat, User) and chat.bot:
             return False
 
         return bool(sender.is_self) or bool(event.is_private)
