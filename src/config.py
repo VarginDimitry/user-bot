@@ -39,8 +39,8 @@ class GeminiSettings(BaseSettings):
 class InstaSettings(BaseSettings):
     model_config = ConfigDict(extra="ignore")
 
-    delay_from: int = 2  # in sec
-    delay_to: int = 4  # in sec
+    delay_from: int = 1  # in sec
+    delay_to: int = 2  # in sec
     username: str
     password: str
     black_list: list[int] = Field(default_factory=list)
