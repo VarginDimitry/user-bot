@@ -63,12 +63,12 @@ def register_handlers(client: MegaTelegramClient, config: Config) -> None:
         if isinstance(chat, User) and chat.bot:
             return False
 
+        if not InstaService.check_link_match(message.text):
+            return False
+
         return bool(sender.is_self) or bool(event.is_private)
 
     client.add_event_handler(
         download_insta,
-        NewMessage(
-            pattern=InstaService.LINK_REGEX,
-            func=download_insta_func_filter,
-        ),
+        NewMessage(func=download_insta_func_filter),
     )

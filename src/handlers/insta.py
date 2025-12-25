@@ -23,7 +23,7 @@ async def download_insta(
     client = cast(MegaTelegramClient, event.client)
     user = cast(User, await message.get_sender())
 
-    insta_url = insta_service.process_url(message.text.strip())
+    insta_url = insta_service.process_url(message.text)
 
     media_info = await insta_service.get_media_info_by_link(insta_url)
 

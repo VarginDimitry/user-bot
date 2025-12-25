@@ -2,30 +2,20 @@ import asyncio
 import re
 from logging import Logger
 from pathlib import Path
-from typing import Any, Awaitable, Callable, TypeVar
 
 from instagrapi import Client
 
 from config import Config
 from dto.instagram import MyMedia
 
-F = TypeVar("F", bound=Callable[..., Awaitable[Any]])
-
-
-# duplicate of instagrapi functional
-# def delay_task(func: F) -> F:
-#     @wraps(func)
-#     async def _inner(*args: Any, **kwargs: Any) -> Any:
-#         self: 'InstaService' = args[0]
-#         self.logger.info(f"Delay {func.__name__} delaying in {self.config.instagram.request_delay} sec")
-#         await asyncio.sleep(self.config.instagram.request_delay)
-#         return await func(*args, **kwargs)
-#     return _inner
-
 
 class InstaService:
-    LINK_REGEX = re.compile(r"https?://(www\.)?instagram\.com/.*")
-    DD_LINK_REGEX = re.compile(r"https?://(www\.)?ddinstagram\.com/.*")
+    BASE_URL = "instagram.com"
+    REGEXES: tuple[tuple[re.Pattern[str], str], ...] = (
+        (re.compile(r"^(https?://)?(www\.)?instagram\.com/\S*$"), "instagram.com"),
+        (re.compile(r"^(https?://)?(www\.)?ddinstagram\.com/\S*$"), "ddinstagram.com"),
+        (re.compile(r"^(https?://)?(www\.)?kkinstagram\.com/\S*$"), "kkinstagram.com"),
+    )
     LOGIN_JSON_PATH = Path("InstagramSession.json")
 
     def __init__(self, logger: Logger, config: Config, insta_client: Client) -> None:
@@ -67,18 +57,20 @@ class InstaService:
 
         return is_login
 
-    async def get_new_link(self, link: str) -> str:
-        link = self.process_url(link)
-
-        if not self.LINK_REGEX.match(link):
-            raise ValueError("Invalid link")
-
-        if self.DD_LINK_REGEX.match(link):
-            return link
-
-        return link.replace("instagram.com", "ddinstagram.com")
-
     @classmethod
     def process_url(cls, url: str) -> str:
         url = url.strip()
-        return url[:idx] if (idx := url.find("?")) != -1 else url
+
+        for regex, base_url in cls.REGEXES:
+            if regex.match(url):
+                url = url.replace(base_url, cls.BASE_URL)
+
+        if (idx := url.find("?")) != -1:
+            url = url[:idx]
+
+        return url
+
+    @classmethod
+    def check_link_match(cls, url: str) -> bool:
+        url = url.strip()
+        return any(regex.match(url) for regex, _ in cls.REGEXES)
