@@ -1,6 +1,6 @@
 import asyncio
-from logging import Logger
 import os
+from logging import Logger
 from uuid import uuid4
 
 import aiofiles
@@ -24,11 +24,11 @@ class DownloadService:
         async with aiofiles.open(path, "wb") as f:
             async for chunk in response.aiter_bytes():
                 await f.write(chunk)
-        
+
         # Compress video if it's an mp4 file
         if ext == "mp4":
             path = await self._compress_video(path)
-            
+
         return path
 
     async def download_media_by_info(self, media_info: MyMedia) -> str | list[str]:
@@ -50,7 +50,7 @@ class DownloadService:
     async def _compress_video(self, input_path: str) -> str:
         self.logger.info(f"Compressing video from {input_path}")
         output_path = os.path.join(self.tempdir, f"{uuid4().hex}.mp4")
-        
+
         # ffmpeg command for compression:
         # - crf 28: quality level (0-51, higher = smaller file, 23 is default, 28 is good compression)
         # - preset fast: encoding speed/compression ratio tradeoff
@@ -58,27 +58,32 @@ class DownloadService:
         # - acodec aac: use AAC audio codec
         process = await asyncio.create_subprocess_exec(
             "ffmpeg",
-            "-i", input_path,
-            "-vcodec", "libx264",
-            "-crf", "28",
-            "-preset", "fast",
-            "-acodec", "aac",
+            "-i",
+            input_path,
+            "-vcodec",
+            "libx264",
+            "-crf",
+            "28",
+            "-preset",
+            "fast",
+            "-acodec",
+            "aac",
             "-y",  # Overwrite output file if it exists
             output_path,
             stdout=asyncio.subprocess.DEVNULL,
             stderr=asyncio.subprocess.DEVNULL,
         )
-        
+
         await process.wait()
-        
+
         if process.returncode != 0:
             # If compression fails, return original file
             return input_path
-        
+
         # Remove the original file and return compressed version
         try:
             os.remove(input_path)
         except Exception:
             pass
-            
+
         return output_path

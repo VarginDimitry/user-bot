@@ -12,9 +12,24 @@ from dto.instagram import MyMedia
 class InstaService:
     BASE_URL = "instagram.com"
     REGEXES: tuple[tuple[re.Pattern[str], str], ...] = (
-        (re.compile(r"^\s*(https?://)?(www\.)?instagram\.com/[^\s]+\s*\Z", re.DOTALL), "instagram.com"),
-        (re.compile(r"^\s*(https?://)?(www\.)?ddinstagram\.com/[^\s]+\s*\Z", re.DOTALL), "ddinstagram.com"),
-        (re.compile(r"^\s*(https?://)?(www\.)?kkinstagram\.com/[^\s]+\s*\Z", re.DOTALL), "kkinstagram.com"),
+        (
+            re.compile(
+                r"^\s*(https?://)?(www\.)?instagram\.com/[^\s]+\s*\Z", re.DOTALL
+            ),
+            "instagram.com",
+        ),
+        (
+            re.compile(
+                r"^\s*(https?://)?(www\.)?ddinstagram\.com/[^\s]+\s*\Z", re.DOTALL
+            ),
+            "ddinstagram.com",
+        ),
+        (
+            re.compile(
+                r"^\s*(https?://)?(www\.)?kkinstagram\.com/[^\s]+\s*\Z", re.DOTALL
+            ),
+            "kkinstagram.com",
+        ),
     )
     LOGIN_JSON_PATH = Path("InstagramSession.json")
 

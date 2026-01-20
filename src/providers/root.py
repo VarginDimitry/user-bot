@@ -59,7 +59,14 @@ class RootProvider(Provider):
     async def tmp_dir(self) -> AsyncIterable[TmpDirType]:
         async with TemporaryDirectory() as tempdir:
             yield tempdir
-            
+
     @provide(scope=Scope.REQUEST)
-    def download_service(self, httpx_client: httpx.AsyncClient, tmp_dir: TmpDirType) -> DownloadService:
-        return DownloadService(httpx_client=httpx_client, tempdir=tmp_dir)
+    def download_service(
+        self,
+        logger: logging.Logger,
+        httpx_client: httpx.AsyncClient,
+        tmp_dir: TmpDirType,
+    ) -> DownloadService:
+        return DownloadService(
+            logger=logger, httpx_client=httpx_client, tempdir=tmp_dir
+        )
