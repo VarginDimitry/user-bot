@@ -1,6 +1,5 @@
 from typing import cast
 
-from aiofiles.tempfile import TemporaryDirectory
 from dishka import FromDishka
 from httpx import AsyncClient
 from telethon.events import NewMessage
@@ -10,7 +9,7 @@ from telethon.tl.types import User
 from dto.instagram import MyMedia
 from services.insta_service import InstaService
 from utils.custom_telegram_client import MegaTelegramClient
-from utils.download_media import download_media_by_info
+from utils.download_media import DownloadService
 from utils.strings import beautify_int
 
 
@@ -18,6 +17,7 @@ async def download_insta(
     event: NewMessage.Event,
     insta_service: FromDishka[InstaService],
     httpx_client: FromDishka[AsyncClient],
+    download_service: FromDishka[DownloadService],
 ) -> None:
     message = cast(Message, event.message)
     client = cast(MegaTelegramClient, event.client)
@@ -26,23 +26,16 @@ async def download_insta(
     insta_url = insta_service.process_url(message.text)
 
     media_info = await insta_service.get_media_info_by_link(insta_url)
+    path = await download_service.download_media_by_info(media_info)
 
-    text = _build_answer_text(insta_url, media_info, client.CAPTION_SIZE_LIMIT)
-    async with TemporaryDirectory() as tempdir:
-        path = await download_media_by_info(
-            httpx_client=httpx_client,
-            tempdir=tempdir,
-            media_info=media_info,
-        )
-
-        await client.send_message(
-            entity=message.peer_id,
-            file=path,
-            message=text,
-            reply_to=message.reply_to_msg_id if user.is_self else message.id,
-            silent=True,
-            parse_mode="HTML",
-        )
+    await client.send_message(
+        entity=message.peer_id,
+        file=path,
+        message=_build_answer_text(insta_url, media_info, client.CAPTION_SIZE_LIMIT),
+        reply_to=message.reply_to_msg_id if user.is_self else message.id,
+        silent=True,
+        parse_mode="HTML",
+    )
 
     if user.is_self:
         await message.delete()

@@ -2,6 +2,7 @@ import logging
 from typing import AsyncIterable
 
 import httpx
+from aiofiles.tempfile import TemporaryDirectory
 from aiogram import Bot
 from coloredlogs import ColoredFormatter
 from dishka import from_context, provide, Provider, Scope
@@ -9,6 +10,7 @@ from telethon.events.common import EventCommon
 
 from config import Config
 from utils.custom_logging import TelegramLoggerHandler
+from utils.download_media import DownloadService, TmpDirType
 
 
 class RootProvider(Provider):
@@ -52,3 +54,12 @@ class RootProvider(Provider):
     async def httpx_client(self) -> AsyncIterable[httpx.AsyncClient]:
         async with httpx.AsyncClient() as client:
             yield client
+
+    @provide(scope=Scope.REQUEST)
+    async def tmp_dir(self) -> AsyncIterable[TmpDirType]:
+        async with TemporaryDirectory() as tempdir:
+            yield tempdir
+            
+    @provide(scope=Scope.REQUEST)
+    def download_service(self, httpx_client: httpx.AsyncClient, tmp_dir: TmpDirType) -> DownloadService:
+        return DownloadService(httpx_client=httpx_client, tempdir=tmp_dir)

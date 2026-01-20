@@ -2237,6 +2237,7 @@ dependencies = [
 
 [package.optional-dependencies]
 dev = [
+    { name = "ipykernel" },
     { name = "notebook" },
 ]
 lint = [
@@ -2260,6 +2261,7 @@ requires-dist = [
     { name = "google-genai", specifier = ">=1.21.1" },
     { name = "hf-xet", specifier = ">=1.1.5" },
     { name = "instagrapi", git = "https://github.com/subzeroid/instagrapi.git?rev=c98539ce45dbd9726879ceb2d8b6a88e9173309e" },
+    { name = "ipykernel", marker = "extra == 'dev'" },
     { name = "isort", marker = "extra == 'lint'", specifier = ">=6.0.1" },
     { name = "mypy", marker = "extra == 'lint'", specifier = ">=1.16.1" },
     { name = "notebook", marker = "extra == 'dev'", specifier = ">=7.4.3" },

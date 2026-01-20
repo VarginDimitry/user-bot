@@ -38,6 +38,7 @@ lint = [
 ]
 dev = [
     "notebook>=7.4.3",
+    "ipykernel",
 ]
 
 [tool.isort]
