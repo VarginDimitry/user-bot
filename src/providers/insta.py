@@ -15,7 +15,7 @@ class InstaProvider(Provider):
             logger=logger.getChild("instagrapi"),
         )
 
-    @provide(scope=Scope.REQUEST)
+    @provide(scope=Scope.APP)
     async def provide_insta_service(
         self,
         logger: Logger,
