@@ -1,9 +1,14 @@
 import asyncio
+from functools import wraps
+import json
+from typing import Any, Awaitable
+import aiofiles
 import re
 from logging import Logger
 from pathlib import Path
 
 from instagrapi import Client
+from instagrapi.exceptions import ChallengeRequired, ChallengeUnknownStep, ClientUnauthorizedError
 
 from config import Config
 from dto.instagram import MyMedia
@@ -38,8 +43,33 @@ class InstaService:
         self.config = config
         self.client = insta_client
 
-    async def login(self) -> bool:
-        return await asyncio.to_thread(self._login)
+    async def login(self, force: bool = False) -> bool:
+        if not force and self.LOGIN_JSON_PATH.exists() and self.LOGIN_JSON_PATH.is_file():
+            async with aiofiles.open(self.LOGIN_JSON_PATH, "r") as f:
+                self.client.set_settings(json.loads(await f.read()))
+            
+        is_login = await asyncio.to_thread(self._login, force)
+        
+        if is_login:
+            async with aiofiles.open(self.LOGIN_JSON_PATH, "w") as f:
+                await f.write(json.dumps(self.client.get_settings()))
+
+        return is_login
+    
+    @classmethod
+    def shield_unauthorized(cls, func: Awaitable[Any]) -> Awaitable[Any]:
+        
+        @wraps(func)
+        async def inner(self, *args, **kwargs) -> Any:
+            try:
+                return await func(*args, **kwargs)
+            except (ChallengeUnknownStep, ChallengeRequired, ClientUnauthorizedError):
+                is_login = await self.login(force=True)
+                if is_login:
+                    return await func(*args, **kwargs)
+                raise
+        
+        return inner
 
     async def get_media_info_by_link(self, url: str) -> MyMedia:
         try:
@@ -51,26 +81,11 @@ class InstaService:
             self.logger.error(e)
             raise
 
-    def _login(self) -> bool:
-        if self.LOGIN_JSON_PATH.exists() and self.LOGIN_JSON_PATH.is_file():
-            self.client.load_settings(self.LOGIN_JSON_PATH)
-        is_login: bool = self.client.login(
+    def _login(self, force: bool) -> bool:
+        return self.client.login(
             username=self.config.instagram.username,
             password=self.config.instagram.password,
         )
-        if is_login:
-            self.client.dump_settings(self.LOGIN_JSON_PATH)
-        #     return is_login
-
-        # is_login: bool = self.client.login(
-        #     username=self.config.instagram.username,
-        #     password=self.config.instagram.password,
-        #     relogin=True,
-        # )
-        # if is_login:
-        #     self.client.dump_settings(self.LOGIN_JSON_PATH)
-
-        return is_login
 
     @classmethod
     def process_url(cls, url: str) -> str:

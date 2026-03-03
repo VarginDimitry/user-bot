@@ -25,13 +25,24 @@ def register_handlers(client: MegaTelegramClient, config: Config) -> None:
     )
 
     ### VOICE HANDLERS
+    async def auto_transcribe_voice_func_filter(event: NewMessage.Event) -> bool:
+        message = cast(Message, event.message)
+        chat = cast(User | Chat | Channel, await message.get_chat())
+
+        if not (message.voice or message.video_note):
+            return False
+
+        if chat.id in config.whisper.black_list:
+            return False
+
+        if chat.id in config.whisper.white_list:
+            return True
+
+        return event.is_private
+
     client.add_event_handler(
         auto_transcribe_voice,
-        NewMessage(
-            func=lambda e: (e.message.voice or e.message.video_note) and e.is_private,
-            chats=config.whisper.black_list,
-            blacklist_chats=True,
-        ),
+        NewMessage(func=auto_transcribe_voice_func_filter),
     )
     client.add_event_handler(
         transcribe_voice,
