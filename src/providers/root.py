@@ -5,8 +5,7 @@ import httpx
 from aiofiles.tempfile import TemporaryDirectory
 from aiogram import Bot
 from coloredlogs import ColoredFormatter
-from dishka import from_context, provide, Provider, Scope
-from telethon.events.common import EventCommon
+from dishka import provide, Provider, Scope
 
 from config import Config
 from utils.custom_logging import TelegramLoggerHandler
@@ -14,8 +13,6 @@ from utils.download_media import DownloadService, TmpDirType
 
 
 class RootProvider(Provider):
-    event = from_context(EventCommon, scope=Scope.REQUEST)
-
     @provide(scope=Scope.APP)
     def provide_config(self) -> Config:
         return Config()

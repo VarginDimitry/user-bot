@@ -1,10 +1,12 @@
 **/*.db
+/*.session
 /src/*.session
 /src/*.session-journal
 **/Telethon.session
 **/Telethon.session-journal
 **/InstagramSession.json
 /src/downloads/
+/login_data/**
 
 
 # Created by .ignore support plugin (hsz.mobi)

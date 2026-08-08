@@ -4,9 +4,21 @@ from pathlib import Path
 
 from google import genai
 from google.genai.types import File
+from openai import AsyncOpenAI
+
+from config import Config
 
 
 class GPTService(ABC):
+    MIME_TYPE_MAP = {
+        ".ogg": "audio/ogg",
+        ".mp3": "audio/mpeg",
+        ".wav": "audio/wav",
+        ".m4a": "audio/mp4",
+        ".mp4": "audio/mp4",
+        ".webm": "audio/webm",
+        ".flac": "audio/flac",
+    }
     @abstractmethod
     async def ask(self, prompt: str) -> str | None:
         pass
@@ -28,15 +40,6 @@ class GeminiService(GPTService):
         "gemini-2.0-flash",
         "gemini-2.0-flash-lite",
     )
-    MIME_TYPE_MAP = {
-        ".ogg": "audio/ogg",
-        ".mp3": "audio/mpeg",
-        ".wav": "audio/wav",
-        ".m4a": "audio/mp4",
-        ".mp4": "audio/mp4",
-        ".webm": "audio/webm",
-        ".flac": "audio/flac",
-    }
 
     def __init__(self, logger: logging.Logger, gpt: genai.Client) -> None:
         self.logger = logger
@@ -81,3 +84,20 @@ class GeminiService(GPTService):
             file=file_path,
             config={"mime_type": self.MIME_TYPE_MAP.get(mime_type)},
         )
+        
+class OpenAIService(GPTService):
+    def __init__(self, logger: logging.Logger, gpt: AsyncOpenAI, config: Config) -> None:
+        self.logger = logger
+        self.gpt = gpt
+        self.config = config
+        
+    async def ask(self, prompt: str) -> str | None:
+        try:
+            response = await self.gpt.responses.create(
+                model=self.config.openai.mode, 
+                messages=[{"role": "user", "content": prompt}]
+            )
+            return response.output_text
+        except Exception as e:
+            logging.error(f"Ошибка при использовании модели {model_name}: {str(e)}")
+        return None

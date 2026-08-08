@@ -35,15 +35,22 @@ class GeminiSettings(BaseSettings):
     model_config = ConfigDict(extra="ignore")
 
     api_key: str
+    
+
+class OpenAISettings(BaseSettings):
+    model_config = ConfigDict(extra="ignore")
+
+    api_key: str = "cursor"
+    base_url: str = "http://localhost:8765/v1"
+    model: str = "gpt-4o-mini"
 
 
 class InstaSettings(BaseSettings):
     model_config = ConfigDict(extra="ignore")
 
-    delay_from: float = 2  # in sec
-    delay_to: float = 3  # in sec
-    username: str
-    password: str
+    download_bot_id: int = 523131145
+    download_bot_timeout: float = 120
+
     black_list: list[int] = Field(default_factory=list)
 
 
@@ -87,6 +94,7 @@ class Config(BaseSettings):
 
     instagram: InstaSettings
     gemini: GeminiSettings
+    openai: OpenAISettings
     whisper: WhisperSettings
 
     sqlite: SqliteSettings | None = None

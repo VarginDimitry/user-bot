@@ -52,22 +52,22 @@ class VoiceService:
                 self.logger.error("Failed to download voice message")
                 return ""
 
-            if result := await self._transcribe_using_gpt(input_voice, input_ext):
-                return result
+            # if result := await self._transcribe_using_gpt(input_voice, input_ext):
+            #     return result
 
             async with NamedTemporaryFile(suffix=".wav") as output_voice:
                 return await self._transcribe_using_local_model(
                     input_voice, output_voice
                 )
 
-    async def _transcribe_using_gpt(
-        self, input_voice: AsyncBufferedIOBase, input_ext: str
-    ) -> str:
-        return await self.gpt_service.ask_with_file(
-            prompt="Detect the language (usually RU) and generate a transcript of the speech. Send only text, without any additional comments.",
-            file_path=input_voice.name,
-            mime_type=self.gpt_service.MIME_TYPE_MAP.get(input_ext),
-        )
+    # async def _transcribe_using_gpt(
+    #     self, input_voice: AsyncBufferedIOBase, input_ext: str
+    # ) -> str:
+    #     return await self.gpt_service.ask_with_file(
+    #         prompt="Detect the language (usually RU) and generate a transcript of the speech. Send only text, without any additional comments.",
+    #         file_path=input_voice.name,
+    #         mime_type=self.gpt_service.MIME_TYPE_MAP.get(input_ext),
+    #     )
 
     async def _transcribe_using_local_model(
         self,

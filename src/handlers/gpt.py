@@ -1,16 +1,20 @@
-from typing import cast
-
 from dishka import FromDishka
 from telethon.events import NewMessage
 from telethon.tl.patched import Message
 
 from services.gpt_service import GPTService
-from utils.custom_telegram_client import MegaTelegramClient
+from utils.telethon import TelegramClient
+from utils.telethon.router import UpdateRouter
+
+gpt_router = UpdateRouter()
 
 
-async def ask_gpt(event: NewMessage.Event, gpt_service: FromDishka[GPTService]) -> None:
-    message = cast(Message, event.message)
-    client = cast(MegaTelegramClient, event.client)
+@gpt_router.on(NewMessage(pattern=r"^/gpt$", outgoing=True, incoming=False))
+async def ask_gpt(
+    message: Message,
+    client: FromDishka[TelegramClient],
+    gpt_service: FromDishka[GPTService],
+) -> None:
     text = message.text.removeprefix("/gpt").strip()
     if not text:
         return

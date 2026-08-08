@@ -1,85 +1,14 @@
-from typing import cast
-
-from telethon.events import NewMessage
-from telethon.tl.patched import Message
-from telethon.tl.types import Channel, Chat, User
-
-from config import Config
-from handlers.gpt import ask_gpt
-from handlers.help import bot_help
-from handlers.insta import download_insta
-from handlers.voice import auto_transcribe_voice, transcribe_voice
-from services.insta_service import InstaService
-from utils.custom_telegram_client import MegaTelegramClient
+from handlers.gpt import gpt_router
+from handlers.help import help_router
+from handlers.insta import insta_router
+from handlers.voice import voice_router
+from utils.telethon.router import UpdateRouter
 
 
-def register_handlers(client: MegaTelegramClient, config: Config) -> None:
-    ### HELP HANDLERS
-    client.add_event_handler(
-        bot_help,
-        NewMessage(
-            pattern=r"^/help$",
-            outgoing=True,
-            incoming=False,
-        ),
-    )
-
-    ### VOICE HANDLERS
-    async def auto_transcribe_voice_func_filter(event: NewMessage.Event) -> bool:
-        message = cast(Message, event.message)
-        chat = cast(User | Chat | Channel, await message.get_chat())
-
-        if not (message.voice or message.video_note):
-            return False
-
-        if chat.id in config.whisper.black_list:
-            return False
-
-        if chat.id in config.whisper.white_list:
-            return True
-
-        return event.is_private
-
-    client.add_event_handler(
-        auto_transcribe_voice,
-        NewMessage(func=auto_transcribe_voice_func_filter),
-    )
-    client.add_event_handler(
-        transcribe_voice,
-        NewMessage(
-            func=lambda e: e.message.is_reply,
-            pattern=r"^/transcribe$",
-        ),
-    )
-
-    ### GPT HANDLERS
-    client.add_event_handler(
-        ask_gpt,
-        NewMessage(
-            pattern=r"^/gpt",
-            outgoing=True,
-            incoming=False,
-        ),
-    )
-
-    ### INSTA HANDLERS
-    async def download_insta_func_filter(event: NewMessage.Event) -> bool:
-        message = cast(Message, event.message)
-        sender = cast(User, await message.get_sender())
-        chat = cast(User | Chat | Channel, await message.get_chat())
-
-        if chat.id in config.instagram.black_list:
-            return False
-
-        if isinstance(chat, User) and chat.bot:
-            return False
-
-        if not InstaService.check_link_match(message.text):
-            return False
-
-        return bool(sender.is_self) or bool(event.is_private)
-
-    client.add_event_handler(
-        download_insta,
-        NewMessage(func=download_insta_func_filter),
-    )
+def get_main_router() -> UpdateRouter:
+    router = UpdateRouter()
+    router.include_router(help_router)
+    router.include_router(voice_router)
+    router.include_router(gpt_router)
+    router.include_router(insta_router)
+    return router

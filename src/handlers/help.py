@@ -1,16 +1,18 @@
-from typing import cast
-
 from dishka import FromDishka
 from sqlalchemy.ext.asyncio import AsyncSession
 from telethon.events import NewMessage
 from telethon.tl.patched import Message
 
-from utils.custom_telegram_client import MegaTelegramClient
+from utils.telethon import TelegramClient
+from utils.telethon.router import UpdateRouter
+
+help_router = UpdateRouter()
 
 
-async def bot_help(event: NewMessage.Event, _: FromDishka[AsyncSession]) -> None:
-    message = cast(Message, event.message)
-    client = cast(MegaTelegramClient, event.client)
+@help_router.on(NewMessage(pattern=r"^/help$", outgoing=True, incoming=False))
+async def bot_help(
+    message: Message, client: FromDishka[TelegramClient], _: FromDishka[AsyncSession]
+) -> None:
     me = await client.get_me()
 
     text = (

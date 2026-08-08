@@ -2,43 +2,44 @@
 name = "user-bot"
 version = "0.1.0"
 description = ""
-authors = ["Dmitry Vargin"]
+authors = [{ name = "Dmitry Vargin" }]
 readme = "README.md"
 requires-python = "==3.12.11"
 dependencies = [
-    "advanced-alchemy>=1.8.0",
-    "aiofiles>=24.1.0",
-    "aiogram>=3.22.0",
-    "alembic>=1.17.2",
-    "asyncpg>=0.30.0",
+    "advanced-alchemy>=1.11.0",
+    "aiofiles>=25.1.0",
+    "aiogram>=3.30.0",
+    "alembic>=1.19.0",
+    "asyncpg>=0.31.0",
     "colorama>=0.4.6",
-    "dishka>=1.7.2",
-    "faster-whisper>=1.1.1",
+    "coloredlogs>=15.0.1",
+    "dishka>=1.10.1",
+    "faster-whisper>=1.2.1",
     "ffmpeg-python>=0.2.0",
-    "google-genai>=1.21.1",
-    "hf-xet>=1.1.5",
-    # "instagrapi>=2.2.1",
-    "instagrapi @ git+https://github.com/subzeroid/instagrapi.git@d181c496e0e2688f3ac7b8b62c7f928ede445a14",
-    "pillow>=11.2.1",
-    "psycopg2-binary>=2.9.11",
-    "pydantic>=2.11.5",
-    "pydantic-settings>=2.10.0",
-    "sqlalchemy>=2.0.44",
-    "telethon>=1.42.0",
+    "google-genai>=2.17.0",
+    "hf-xet>=1.6.0",
+    "instagrapi>=2.18.12",
+    "openai>=2.53.0",
+    "pillow>=12.3.0",
+    "psycopg2-binary>=2.9.12",
+    "pydantic>=2.12.5",
+    "pydantic-settings>=2.15.0",
+    "sqlalchemy>=2.0.51",
+    "telethon>=1.44.0",
     "tgcrypto>=1.2.5",
-    "uuid-utils>=0.11.1",
+    "uuid-utils>=0.17.0",
 ]
 
 [project.optional-dependencies]
 lint = [
-    "isort>=6.0.1",
-    "mypy>=1.16.1",
-    "ruff>=0.12.0",
-    "types-aiofiles>=24.1.0.20250606",
+    "isort>=8.0.1",
+    "mypy>=2.3.0",
+    "ruff>=0.16.1",
+    "types-aiofiles>=25.1.0.20260518",
 ]
 dev = [
-    "notebook>=7.4.3",
-    "ipykernel",
+    "notebook>=7.6.1",
+    "ipykernel>=7.3.0",
 ]
 
 [tool.isort]

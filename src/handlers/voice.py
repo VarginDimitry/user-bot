@@ -4,16 +4,41 @@ from typing import cast
 from dishka import FromDishka
 from telethon.events import NewMessage
 from telethon.tl.patched import Message
+from telethon.tl.types import Channel, Chat, User
 
+from config import Config
 from services.voice_service import VoiceService
-from utils.custom_telegram_client import MegaTelegramClient
+from utils.telethon import TelegramClient
+from utils.telethon.router import UpdateRouter
+
+voice_router = UpdateRouter()
 
 
-async def auto_transcribe_voice(
-    event: NewMessage.Event, voice_service: FromDishka[VoiceService]
-) -> None:
+async def auto_transcribe_voice_func_filter(event: NewMessage.Event) -> bool:
     message = cast(Message, event.message)
-    client = cast(MegaTelegramClient, event.client)
+    chat = cast(User | Chat | Channel, await message.get_chat())
+
+    client = cast(TelegramClient, event.client)
+    config = await client.di_container.get(Config)
+
+    if not (message.voice or message.video_note):
+        return False
+
+    if chat.id in config.whisper.black_list:
+        return False
+
+    if chat.id in config.whisper.white_list:
+        return True
+
+    return event.is_private
+
+
+@voice_router.on(NewMessage(func=auto_transcribe_voice_func_filter))
+async def auto_transcribe_voice(
+    message: Message,
+    client: FromDishka[TelegramClient],
+    voice_service: FromDishka[VoiceService],
+) -> None:
     result = await voice_service.transcribe_voice_message(message) or "No text detected"
 
     await client.safe_send_message(
@@ -26,14 +51,15 @@ async def auto_transcribe_voice(
     )
 
 
+@voice_router.on(
+    NewMessage(func=lambda e: e.message.is_reply, pattern=r"^/transcribe$")
+)
 async def transcribe_voice(
-    event: NewMessage.Event,
+    message: Message,
+    client: FromDishka[TelegramClient],
     logger: FromDishka[Logger],
     voice_service: FromDishka[VoiceService],
 ) -> None:
-    message = cast(Message, event.message)
-    client = cast(MegaTelegramClient, event.client)
-
     reply_message = cast(Message | None, await message.get_reply_message())
     if not (reply_message and (reply_message.voice or reply_message.video_note)):
         logger.error("Got not a voice message")

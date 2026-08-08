@@ -31,6 +31,48 @@ services:
     networks:
       - usrbot-network
 
+  # cursor:
+  #   image: ghcr.io/egoist/cursor-openai-api:latest
+  #   container_name: cursor
+  #   command: ["serve"]
+  #   environment:
+  #     PORT: 3000
+  #   ports:
+  #     - "3000:3000"
+  #   networks:
+  #     - usrbot-network
+  #   volumes:
+  #     - ./login_data/:/home/appuser/.config/cursor-openai-api
+  
+  proxy:
+    build: ../../foreign/cursor-api-proxy
+    image: cursor-api-proxy:latest
+    container_name: cursor-api-proxy
+    restart: unless-stopped
+    init: true
+    ports:
+      # HOST_BIND defaults to 127.0.0.1 (localhost only). Set HOST_BIND=0.0.0.0
+      # in .env to expose on all host interfaces (LAN/Tailscale/public), or
+      # set it to a specific IP (e.g. 100.x.x.x for Tailscale only).
+      - "${HOST_BIND:-127.0.0.1}:${HOST_PORT:-8765}:8765"
+    environment:
+      # Cursor CLI auth — required. Get it from https://cursor.com/dashboard/integrations
+      CURSOR_API_KEY: yJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJnaXRodWJ8dXNlcl8wMUs0TjdWQ0dGNDk4NFY1QlowRk5ORkNaVCIsInRpbWUiOiIxNzg2MTE5MjcwIiwicmFuZG9tbmVzcyI6ImZkMGFlZDE4LTEwNmUtNDM5MSIsImV4cCI6MTc5MTMwMzI3MCwiaXNzIjoiaHR0cHM6Ly9hdXRoZW50aWNhdGlvbi5jdXJzb3Iuc2giLCJzY29wZSI6Im9wZW5pZCBwcm9maWxlIGVtYWlsIG9mZmxpbmVfYWNjZXNzIiwiYXVkIjoiaHR0cHM6Ly9jdXJzb3IuY29tIiwidHlwZSI6InNlc3Npb24ifQ.DVsRqCoZMoSjAoOOWsBP7UZ8JNN8F-RHXVKg6aEXBXs
+      # Bind 0.0.0.0 so the port mapping works
+      CURSOR_BRIDGE_HOST: "0.0.0.0"
+      CURSOR_BRIDGE_PORT: "8765"
+      # Optional pass-throughs (set in .env to use)
+      CURSOR_BRIDGE_API_KEY: ${CURSOR_BRIDGE_API_KEY:-}
+      CURSOR_BRIDGE_DEFAULT_MODEL: ${CURSOR_BRIDGE_DEFAULT_MODEL:-auto}
+      CURSOR_BRIDGE_TIMEOUT_MS: ${CURSOR_BRIDGE_TIMEOUT_MS:-300000}
+      CURSOR_BRIDGE_VERBOSE: ${CURSOR_BRIDGE_VERBOSE:-false}
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://127.0.0.1:8765/healthz || exit 1"]
+      interval: 30s
+      timeout: 5s
+      start_period: 10s
+      retries: 3
+
 networks:
   usrbot-network:
     external: true
