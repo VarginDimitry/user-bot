@@ -6,7 +6,7 @@ from telethon.events import NewMessage
 from telethon.tl.patched import Message
 from telethon.tl.types import Channel, Chat, User
 
-from config import Config
+from config import CAPTION_SIZE_LIMIT, CAPTION_SIZE_LIMIT_WITH_PREMIUM, Config
 from services.voice_service import VoiceService
 from utils.telethon import TelegramClient
 from utils.telethon.router import UpdateRouter
@@ -41,18 +41,32 @@ async def auto_transcribe_voice(
 ) -> None:
     result = await voice_service.transcribe_voice_message(message) or "No text detected"
 
-    await client.safe_send_message(
-        entity=message.peer_id,
-        message=result,
-        style="blockquote",
-        reply_to=message.id,
+    common_args = {
+        "style": "blockquote",
+        "parse_mode": "HTML",
+        "entity": message.peer_id,
+    }
+
+    sender = cast(User, await message.get_sender())
+    if sender.is_self and len(result) < (
+        CAPTION_SIZE_LIMIT_WITH_PREMIUM if sender.premium else CAPTION_SIZE_LIMIT
+    ):
+        return await client.edit_message(
+            message=message.id,
+            text=result,
+            **common_args,
+        )
+
+    return await client.safe_send_message(
         silent=True,
-        parse_mode="HTML",
+        message=result,
+        reply_to=message.id,
+        **common_args,
     )
 
 
 @voice_router.on(
-    NewMessage(func=lambda e: e.message.is_reply, pattern=r"^/transcribe$")
+    NewMessage(func=lambda e: e.message.is_reply, pattern=r"(?i)^в\s+текст\b")
 )
 async def transcribe_voice(
     message: Message,

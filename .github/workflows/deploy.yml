@@ -1,4 +1,4 @@
-name: Deploy to Server with Docker Hub
+name: Publish and Deploy
 
 on:
   push:
@@ -6,23 +6,79 @@ on:
       - main
 
 jobs:
-  deploy:
+  publish:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Deploy to server
-        uses: appleboy/ssh-action@master
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Allow insecure HTTP registry
+        run: |
+          echo '{"insecure-registries":["${{ secrets.REGISTRY_HOST }}"]}' | sudo tee /etc/docker/daemon.json
+          sudo systemctl restart docker
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v4
+        with:
+          driver-opts: network=host
+          buildkitd-config-inline: |
+            [registry."${{ secrets.REGISTRY_HOST }}"]
+              http = true
+              insecure = true
+
+      - name: Log in to container registry
+        uses: docker/login-action@v4
+        with:
+          registry: ${{ secrets.REGISTRY_HOST }}
+          username: ${{ secrets.REGISTRY_USERNAME }}
+          password: ${{ secrets.REGISTRY_PASSWORD }}
+
+      - name: Extract metadata
+        id: meta
+        uses: docker/metadata-action@v6
+        with:
+          images: ${{ secrets.REGISTRY_HOST }}/user-bot/user-bot
+          tags: |
+            type=raw,value=latest
+            type=sha,prefix=
+
+      - name: Build and push
+        uses: docker/build-push-action@v7
+        with:
+          context: .
+          push: true
+          platforms: linux/amd64
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+
+  deploy:
+    needs: publish
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Deploy to VPS
+        uses: appleboy/ssh-action@v1.2.2
+        env:
+          REGISTRY_HOST: ${{ secrets.REGISTRY_HOST }}
+          REGISTRY_USERNAME: ${{ secrets.REGISTRY_USERNAME }}
+          REGISTRY_PASSWORD: ${{ secrets.REGISTRY_PASSWORD }}
         with:
           host: ${{ secrets.SERVER_HOST }}
           username: ${{ secrets.SERVER_USER }}
           password: ${{ secrets.SERVER_PASSWORD }}
+          envs: REGISTRY_HOST,REGISTRY_USERNAME,REGISTRY_PASSWORD
           script: |
             set -e
             cd /root/apps/user-bot
-            git pull --rebase
-            docker system prune -f
-            docker compose down
+
+            echo "$REGISTRY_PASSWORD" | docker login "$REGISTRY_HOST" -u "$REGISTRY_USERNAME" --password-stdin
+
             docker network inspect usrbot-network >/dev/null 2>&1 || docker network create usrbot-network
-            docker compose up -d --build
-            echo "=== Проверка контейнера ==="
-            docker inspect -f "{{.State.Running}}" user-bot || (echo "Контейнер не запущен!" && exit 1)
+
+            docker compose pull
+            docker compose up -d --remove-orphans
+            docker image prune -f
+
+            echo "=== Container check ==="
+            docker inspect -f "{{.State.Running}}" user-bot || (echo "user-bot is not running!" && exit 1)

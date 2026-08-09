@@ -1,3 +1,5 @@
+import re
+
 from dishka import FromDishka
 from telethon.events import NewMessage
 from telethon.tl.patched import Message
@@ -9,13 +11,15 @@ from utils.telethon.router import UpdateRouter
 gpt_router = UpdateRouter()
 
 
-@gpt_router.on(NewMessage(pattern=r"^/gpt$", outgoing=True, incoming=False))
+@gpt_router.on(
+    NewMessage(pattern=r"(?i)^гпт\b", outgoing=True, incoming=False, forwards=False)
+)
 async def ask_gpt(
     message: Message,
     client: FromDishka[TelegramClient],
     gpt_service: FromDishka[GPTService],
 ) -> None:
-    text = message.text.removeprefix("/gpt").strip()
+    text = re.sub(r"(?i)^гпт\s*", "", message.text or "").strip()
     if not text:
         return
 

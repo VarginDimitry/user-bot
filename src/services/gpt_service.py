@@ -19,14 +19,9 @@ class GPTService(ABC):
         ".webm": "audio/webm",
         ".flac": "audio/flac",
     }
-    @abstractmethod
-    async def ask(self, prompt: str) -> str | None:
-        pass
 
     @abstractmethod
-    async def ask_with_file(
-        self, prompt: str, file_path: str | Path, mime_type: str
-    ) -> str | None:
+    async def ask(self, prompt: str) -> str | None:
         pass
 
 
@@ -84,20 +79,32 @@ class GeminiService(GPTService):
             file=file_path,
             config={"mime_type": self.MIME_TYPE_MAP.get(mime_type)},
         )
-        
+
+
 class OpenAIService(GPTService):
-    def __init__(self, logger: logging.Logger, gpt: AsyncOpenAI, config: Config) -> None:
+    def __init__(
+        self, logger: logging.Logger, gpt: AsyncOpenAI, config: Config
+    ) -> None:
         self.logger = logger
         self.gpt = gpt
         self.config = config
-        
+
     async def ask(self, prompt: str) -> str | None:
         try:
-            response = await self.gpt.responses.create(
-                model=self.config.openai.mode, 
-                messages=[{"role": "user", "content": prompt}]
+            response = await self.gpt.chat.completions.create(
+                model=self.config.openai.model,
+                messages=[
+                    {
+                        "role": "system",
+                        "content": "You are a helpful assistant. Answer short and concise in Russian.",
+                    },
+                    {"role": "user", "content": prompt},
+                ],
+                stream=False,
             )
-            return response.output_text
+            return response.choices[0].message.content
         except Exception as e:
-            logging.error(f"Ошибка при использовании модели {model_name}: {str(e)}")
+            logging.error(
+                f"Ошибка при использовании модели {self.config.openai.model}: {str(e)}"
+            )
         return None

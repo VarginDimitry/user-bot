@@ -1,17 +1,14 @@
 import typing
-from typing import Any, Final, Iterable, TYPE_CHECKING
+from typing import Any, Iterable, TYPE_CHECKING
 
 from telethon import hints, TelegramClient
 from telethon.tl import types
 
+from config import MESSAGE_SIZE_LIMIT
 from utils.strings import split_by_size
 
 
 class SafeMessageMixin:  # type: ignore[misc]
-    MESSAGE_SIZE_LIMIT: Final[int] = 4096
-    CAPTION_SIZE_LIMIT: Final[int] = 1024
-    CAPTION_SIZE_LIMIT_WITH_PREMIUM: Final[int] = 2048
-
     if TYPE_CHECKING:
 
         async def send_message(
@@ -49,7 +46,7 @@ class SafeMessageMixin:  # type: ignore[misc]
         style: str | None = None,
         **kwargs: Any,
     ) -> list[types.Message]:
-        messages: Iterable[str] = split_by_size(message, self.MESSAGE_SIZE_LIMIT)
+        messages: Iterable[str] = split_by_size(message, MESSAGE_SIZE_LIMIT)
         if style:
             messages = (f"<{style}>{m}</{style}>" for m in messages)
 
@@ -61,3 +58,13 @@ class SafeMessageMixin:  # type: ignore[misc]
             )
             for m in messages
         ]
+
+    async def edit_message(
+        self,
+        text: str,
+        style: str | None = None,
+        **kwargs: Any,
+    ) -> types.Message:
+        if style:
+            text = f"<{style}>{text}</{style}>"
+        return await super().edit_message(text=text, **kwargs)

@@ -1,5 +1,15 @@
+from pathlib import Path
+from typing import Final
+
 from pydantic import AnyUrl, ConfigDict, Field
 from pydantic_settings import BaseSettings
+
+MESSAGE_SIZE_LIMIT: Final[int] = 4096
+CAPTION_SIZE_LIMIT: Final[int] = 1024
+CAPTION_SIZE_LIMIT_WITH_PREMIUM: Final[int] = 2048
+
+# App cwd is often `src/`; keep .env at the repo root.
+_ENV_FILE: Final[Path] = Path(__file__).resolve().parent.parent / ".env"
 
 
 class UserBotSettings(BaseSettings):
@@ -35,14 +45,14 @@ class GeminiSettings(BaseSettings):
     model_config = ConfigDict(extra="ignore")
 
     api_key: str
-    
+
 
 class OpenAISettings(BaseSettings):
     model_config = ConfigDict(extra="ignore")
 
+    base_url: str
     api_key: str = "cursor"
-    base_url: str = "http://localhost:8765/v1"
-    model: str = "gpt-4o-mini"
+    model: str = "cursor-grok-4.5-low"
 
 
 class InstaSettings(BaseSettings):
@@ -84,7 +94,7 @@ class PostgresConfig(BaseSettings):
 class Config(BaseSettings):
     model_config = ConfigDict(
         extra="ignore",
-        env_file=".env",
+        env_file=_ENV_FILE,
         env_file_encoding="utf-8",
         env_nested_delimiter="__",
     )

@@ -16,7 +16,7 @@ class VoiceProvider(Provider):
     async def provide_whisper_model(
         self, logger: Logger, config: Config
     ) -> WhisperModel:
-        logger.info("Voice model start downloading")
+        logger.info("Voice model start downloading: %s", config.whisper.model)
 
         model: WhisperModel = await asyncio.to_thread(
             WhisperModel,
