@@ -39,6 +39,7 @@ def upgrade() -> None:
             advanced_alchemy.types.datetime.DateTimeUTC(timezone=True),
             nullable=False,
         ),
+        sa.Column("sa_orm_sentinel", sa.Integer(), nullable=True),
         sa.PrimaryKeyConstraint("id", name=op.f("pk_gpt_message")),
     )
 
