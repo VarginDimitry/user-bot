@@ -1,15 +1,29 @@
 import logging
 from abc import ABC, abstractmethod
 from pathlib import Path
+from typing import Awaitable, Callable
 
 from google import genai
 from google.genai.types import File
 from openai import AsyncOpenAI
+from openai.types.chat import ChatCompletionMessage
+from pydantic import BaseModel, ConfigDict
+from uuid_utils import uuid7
 
 from config import Config
+from models import GPTMessageModel
+from repositories.gpt_message import GPTMessageRepository
+
+
+class GPTAskResult(BaseModel):
+    message: str | None = None
+    callback: Callable[[str], Awaitable[None]] | None = None
+
+    model_config = ConfigDict(arbitrary_types_allowed=True)
 
 
 class GPTService(ABC):
+    SYSTEM_PROMPT = "You are a helpful assistant. Answer short and concise in Russian."
     MIME_TYPE_MAP = {
         ".ogg": "audio/ogg",
         ".mp3": "audio/mpeg",
@@ -19,9 +33,83 @@ class GPTService(ABC):
         ".webm": "audio/webm",
         ".flac": "audio/flac",
     }
+    config: Config
+    logger: logging.Logger
+    gpt_message_repository: GPTMessageRepository
+
+    def __init__(
+        self, logger: logging.Logger, gpt_message_repository: GPTMessageRepository
+    ) -> None:
+        self.logger = logger
+        self.gpt_message_repository = gpt_message_repository
+
+    async def ask(
+        self,
+        user_id: str,
+        prompt: str,
+        prompt_message_id: str,
+        reply_message_id: str | None = None,
+    ) -> GPTAskResult:
+        self.logger.info(f"User ask GPT: {prompt!r}")
+
+        history_models = await self._get_history(reply_message_id)
+        new_message = await self.gpt_message_repository.add(
+            GPTMessageModel(
+                dialog_id=history_models[-1].dialog_id
+                if history_models
+                else str(uuid7()),
+                message=prompt,
+                role="user",
+                role_id=user_id,
+                source_message_id=prompt_message_id,
+            )
+        )
+        history_models.append(new_message)
+
+        result = await self._ask(history_models)
+        self.logger.info(f"GPT response: {result or 'No response'!r}")
+
+        callback: Callable[[str], None] | None = None
+        if result:
+
+            async def callback(source_message_id: str) -> None:
+                await self.gpt_message_repository.add(
+                    GPTMessageModel(
+                        dialog_id=history_models[-1].dialog_id,
+                        message=result.content,
+                        role=result.role,
+                        role_id=self.config.openai.model,
+                        source_message_id=str(source_message_id),
+                    )
+                )
+
+        return GPTAskResult(message=result.content or "No response", callback=callback)
+
+    async def _get_history(
+        self,
+        reply_message_id: str | None = None,
+    ) -> list[GPTMessageModel]:
+        if not reply_message_id:
+            return []
+
+        reply_message = await self.gpt_message_repository.get_one(
+            GPTMessageModel.source_message_id == reply_message_id
+        )
+        if not reply_message:
+            return []
+
+        history_models = await self.gpt_message_repository.get_many(
+            GPTMessageModel.dialog_id == reply_message.dialog_id
+        )
+        if not history_models:
+            return []
+
+        return history_models
 
     @abstractmethod
-    async def ask(self, prompt: str) -> str | None:
+    async def _ask(
+        self, messages: list[dict[str, str]]
+    ) -> ChatCompletionMessage | None:
         pass
 
 
@@ -40,7 +128,9 @@ class GeminiService(GPTService):
         self.logger = logger
         self.gpt = gpt
 
-    async def ask(self, prompt: str) -> str | None:
+    async def ask(
+        self, user_id: int, source_message_id: str, prompt: str, is_first: bool = True
+    ) -> str | None:
         for model_name in self.GEMINI_MODELS_GENERATING:
             try:
                 response = await self.gpt.aio.models.generate_content(
@@ -83,28 +173,45 @@ class GeminiService(GPTService):
 
 class OpenAIService(GPTService):
     def __init__(
-        self, logger: logging.Logger, gpt: AsyncOpenAI, config: Config
+        self,
+        logger: logging.Logger,
+        gpt: AsyncOpenAI,
+        config: Config,
+        gpt_message_repository: GPTMessageRepository,
     ) -> None:
         self.logger = logger
         self.gpt = gpt
         self.config = config
+        self.gpt_message_repository = gpt_message_repository
 
-    async def ask(self, prompt: str) -> str | None:
+    async def _ask(
+        self, messages: list[GPTMessageModel]
+    ) -> ChatCompletionMessage | None:
         try:
             response = await self.gpt.chat.completions.create(
                 model=self.config.openai.model,
                 messages=[
                     {
                         "role": "system",
-                        "content": "You are a helpful assistant. Answer short and concise in Russian.",
+                        "content": self.SYSTEM_PROMPT,
                     },
-                    {"role": "user", "content": prompt},
+                    *[
+                        {
+                            "role": message.role,
+                            "content": message.message,
+                        }
+                        for message in messages
+                    ],
                 ],
                 stream=False,
             )
-            return response.choices[0].message.content
+            result = response.choices[0].message
+            if not result.content:
+                raise ValueError("GPT response is empty")
         except Exception as e:
             logging.error(
                 f"Ошибка при использовании модели {self.config.openai.model}: {str(e)}"
             )
-        return None
+            return None
+
+        return result
