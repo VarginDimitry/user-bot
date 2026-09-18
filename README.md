@@ -1,6 +1,6 @@
 # User Bot
 
-Telegram userbot with voice transcription (Whisper), GPT answers (Gemini), and Instagram media download.
+Telegram userbot with voice transcription (Whisper), GPT answers (Gemini Web via an OpenAI-compatible proxy), and Instagram media download.
 
 ## How to run in Docker
 
@@ -42,10 +42,11 @@ Telegram userbot with voice transcription (Whisper), GPT answers (Gemini), and I
     ### Gemini
     * `GEMINI__API_KEY` — Google Gemini API key ([Google AI Studio](https://aistudio.google.com/apikey))
 
-    ### OpenAI-compatible API (Cursor proxy in Compose)
-    * `OPENAI__API_KEY` — API key (default: `cursor`)
-    * `OPENAI__BASE_URL` — base URL (Docker: `http://cursor:3000/v1`, local: `http://localhost:3000/v1`)
-    * `OPENAI__MODEL` — model name (default: `cursor-grok-4.5-low`)
+    ### OpenAI-compatible API (gemini-webapi-proxy in Compose)
+    * `OPENAI__API_KEY` — any non-empty string unless `GOP_API_KEY` is set on the proxy
+    * `OPENAI__BASE_URL` — base URL (local bot: `http://127.0.0.1:4982/openai/v1`; Compose overrides this inside the `user-bot` container)
+    * `OPENAI__MODEL` — model name (default: `gemini-3-flash`; also `gemini-3-pro`)
+    * `GOP_GEMINI_1PSID` / `GOP_GEMINI_1PSIDTS` — Gemini Web cookies from a logged-in `gemini.google.com` session
 
     ### Instagram
     * `INSTAGRAM__BLACK_LIST` — chat IDs where Instagram download is disabled (e.g. `[1, 2]`)
@@ -54,8 +55,8 @@ Telegram userbot with voice transcription (Whisper), GPT answers (Gemini), and I
 
     ### Postgres
     * `POSTGRES__DNS` — SQLAlchemy async DSN  
-      Docker: `postgresql+asyncpg://usrbot:usrbot@postgres:5432/usrbot`  
-      Local: `postgresql+asyncpg://usrbot:usrbot@localhost:5131/usrbot`
+      Local bot: `postgresql+asyncpg://usrbot:usrbot@127.0.0.1:5131/usrbot`  
+      Compose overrides this inside the `user-bot` container to `postgres:5432`
     * `POSTGRES__ECHO` — SQLAlchemy echo (default: `true`)
     * `POSTGRES__MAX_POOL_SIZE` — pool size (default: `5`)
 
@@ -67,6 +68,22 @@ Telegram userbot with voice transcription (Whisper), GPT answers (Gemini), and I
       `docker compose up -d --build`
    3. Skip rebuild:  
       `docker compose up -d`
+
+## How to run the bot locally
+
+Keep Postgres and `gemini-webapi-proxy` in Docker; run the bot on the host.
+
+```bash
+docker network create usrbot-network  # once
+docker compose up -d postgres gemini-webapi-proxy
+```
+
+Point `.env` at the published ports:
+
+* `OPENAI__BASE_URL=http://127.0.0.1:4982/openai/v1`
+* `POSTGRES__DNS=postgresql+asyncpg://usrbot:usrbot@127.0.0.1:5131/usrbot`
+
+Then start the bot from the venv (`src/main.py`). Compose service hostnames (`gemini-webapi-proxy`, `postgres`) are rewritten to `127.0.0.1` automatically when the process is not inside a container.
 
 ## Commands
 

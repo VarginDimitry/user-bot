@@ -8,6 +8,9 @@ services:
     container_name: user-bot
     env_file:
       - .env
+    environment:
+      OPENAI__BASE_URL: http://gemini-webapi-proxy:4982/openai/v1
+      POSTGRES__DNS: postgresql+asyncpg://usrbot:usrbot@postgres:5432/usrbot
     restart: always
     volumes:
       - ./src:/app
@@ -15,6 +18,7 @@ services:
       - usrbot-network
     depends_on:
       - postgres
+      - gemini-webapi-proxy
 
   postgres:
     image: postgres:latest
@@ -31,18 +35,36 @@ services:
     networks:
       - usrbot-network
 
-  cursor:
-    image: ${REGISTRY_HOST}/common/cursor-openai-api:latest
-    container_name: cursor
-    command: ["serve"]
+  gemini-webapi-proxy:
+    image: ghcr.io/lutiancheng1/gemini-webapi-proxy:latest
+    container_name: gemini-webapi-proxy
+    env_file:
+      - .env
     environment:
-      PORT: 3000
+      GOP_PORT: "4982"
+      GOP_HOST: "0.0.0.0"
+      GOP_COOKIE_SOURCE: env
+      GOP_PROBE_ON_START: "false"
+      GOP_LOG_FORMAT: json
+      GOP_GEMINI_1PSID: ${GOP_GEMINI_1PSID}
+      GOP_GEMINI_1PSIDTS: ${GOP_GEMINI_1PSIDTS}
     ports:
-      - "3000:3000"
+      - "4982:4982"
+    restart: always
+    volumes:
+      - gemini-proxy-data:/app/data
     networks:
       - usrbot-network
-    volumes:
-      - ./login_data/:/home/appuser/.config/cursor-openai-api
+    healthcheck:
+      test:
+        - "CMD"
+        - "python"
+        - "-c"
+        - "import urllib.request; urllib.request.urlopen('http://127.0.0.1:4982/health', timeout=5)"
+      interval: 30s
+      timeout: 8s
+      retries: 3
+      start_period: 90s
 
 networks:
   usrbot-network:
@@ -50,3 +72,4 @@ networks:
 
 volumes:
   pgdata:
+  gemini-proxy-data:

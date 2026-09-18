@@ -21,13 +21,15 @@ async def ask_gpt(
     client: FromDishka[TelegramClient],
     gpt_service: FromDishka[GPTService],
 ) -> None:
-    text = re.sub(r"(?i)^гпт\s*", "", message.text or "").strip()
-    if not text:
-        return
+    prompt = re.sub(
+        r"(?i)^гпт\s*", "", message.raw_text or message.text or ""
+    ).strip()
 
     answer = await gpt_service.ask(
-        user_id=str(user.id), prompt=text, prompt_message_id=str(message.id)
+        user_id=str(user.id), prompt=prompt, message=message
     )
+    if not answer.message:
+        return None
 
     messages = await client.safe_send_message(
         entity=message.peer_id,
@@ -38,4 +40,4 @@ async def ask_gpt(
     if not answer.callback:
         return None
 
-    await answer.callback(messages[0].id)
+    await answer.callback(str(messages[0].id))
