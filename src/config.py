@@ -1,7 +1,8 @@
 from pathlib import Path
 from typing import Final
+from urllib.parse import urlparse, urlunparse
 
-from pydantic import AnyUrl, ConfigDict, Field
+from pydantic import AnyUrl, ConfigDict, Field, field_validator
 from pydantic_settings import BaseSettings
 
 MESSAGE_SIZE_LIMIT: Final[int] = 4096
@@ -10,6 +11,24 @@ CAPTION_SIZE_LIMIT_WITH_PREMIUM: Final[int] = 2048
 
 # App cwd is often `src/`; keep .env at the repo root.
 _ENV_FILE: Final[Path] = Path(__file__).resolve().parent.parent / ".env"
+
+
+def _running_in_docker() -> bool:
+    return Path("/.dockerenv").exists()
+
+
+def _rewrite_compose_host(url: str, hostname: str, host_port: int) -> str:
+    """Map Compose service hostnames to published localhost ports when the bot runs on the host."""
+    if _running_in_docker():
+        return url
+    parsed = urlparse(url)
+    if parsed.hostname != hostname:
+        return url
+    userinfo = ""
+    if parsed.username:
+        password = f":{parsed.password}" if parsed.password is not None else ""
+        userinfo = f"{parsed.username}{password}@"
+    return urlunparse(parsed._replace(netloc=f"{userinfo}127.0.0.1:{host_port}"))
 
 
 class UserBotSettings(BaseSettings):
@@ -51,8 +70,13 @@ class OpenAISettings(BaseSettings):
     model_config = ConfigDict(extra="ignore")
 
     base_url: str
-    api_key: str = "cursor"
-    model: str = "cursor-grok-4.5-low"
+    api_key: str = "gemini-webapi"
+    model: str = "gemini-3-flash"
+
+    @field_validator("base_url")
+    @classmethod
+    def rewrite_compose_host_on_local(cls, value: str) -> str:
+        return _rewrite_compose_host(value, "gemini-webapi-proxy", 4982)
 
 
 class InstaSettings(BaseSettings):
@@ -77,6 +101,13 @@ class PostgresConfig(BaseSettings):
     dns: AnyUrl
     echo: bool = True
     max_pool_size: int = 5
+
+    @field_validator("dns", mode="before")
+    @classmethod
+    def rewrite_compose_host_on_local(cls, value: object) -> object:
+        if not isinstance(value, str):
+            return value
+        return _rewrite_compose_host(value, "postgres", 5131)
 
     @property
     def dns_driver(self) -> str:
